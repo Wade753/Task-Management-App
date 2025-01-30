@@ -1,0 +1,90 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Post {
+    id        String   @id @default(uuid())
+    title     String
+    content   String
+    published Boolean  @default(false)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    approvedBy   User?   @relation(name: "ApprovedPosts", fields: [approvedById], references: [id])
+    approvedById String?
+
+    editedBy   User?   @relation(name: "EditedPosts", fields: [editedById], references: [id])
+    editedById String?
+
+    createdBy   User   @relation(name: "CreatedPosts", fields: [createdById], references: [id])
+    createdById String
+
+    comments Comment[]
+
+    @@index([title])
+}
+
+model Comment {
+    id        String   @id @default(uuid())
+    name      String
+    email     String
+    message   String
+    approved  Boolean  @default(false)
+    createdAt DateTime @default(now())
+    postId    String
+    post      Post     @relation(fields: [postId], references: [id])
+}
+
+// Necessary for Next auth
+model Account {
+    id                       String  @id @default(uuid())
+    userId                   String
+    type                     String
+    provider                 String
+    providerAccountId        String
+    refresh_token            String? // @db.Text
+    access_token             String? // @db.Text
+    expires_at               Int?
+    token_type               String?
+    scope                    String?
+    id_token                 String? // @db.Text
+    session_state            String?
+    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    refresh_token_expires_in Int?
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(uuid())
+    sessionToken String   @unique
+    userId       String
+    role         Role
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+    id            String    @id @default(uuid())
+    name          String
+    email         String    @unique
+    password      String
+    image         String?
+    accounts      Account[]
+    sessions      Session[]
+    role          Role
+    posts         Post[]    @relation("CreatedPosts")
+    editedPosts   Post[]    @relation("EditedPosts")
+    approvedPosts Post[]    @relation("ApprovedPosts")
+}
+
+enum Role {
+    ADMIN
+    WRITER
+    EDITOR
+}
