@@ -8,14 +8,32 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { clientApi } from "@/trpc/react";
 
 const commentSchema = z.object({
+  id: z.string().uuid().optional(),
   name: z.string().min(2, "Name must be at least 2 characters."),
   email: z.string().email("Invalid email address."),
-  comment: z.string().min(5, "Comment must be at least 5 characters."),
+  message: z.string().min(5, "Comment must be at least 5 characters."),
+  approved: z.boolean().optional(),
+  createdAt: z.date().optional(),
+  postId: z.string().uuid(),
 });
 
 export default function CommentSection() {
@@ -27,6 +45,7 @@ export default function CommentSection() {
       name: "",
       email: "",
       comment: "",
+      postId: "1",
     },
   });
 
@@ -48,6 +67,7 @@ export default function CommentSection() {
         name: values.name,
         email: values.email,
         message: values.comment,
+        id: values.postId,
       });
       form.reset();
     } catch (error) {
@@ -57,8 +77,8 @@ export default function CommentSection() {
 
   return (
     <div className="p-4">
-      <Card className="p-4 mb-4">
-        <h2 className="text-xl font-semibold mb-2">Login</h2>
+      <Card className="mb-4 p-4">
+        <h2 className="mb-2 text-xl font-semibold">Login</h2>
         <div className="flex gap-2">
           <Input
             type="text"
@@ -73,7 +93,7 @@ export default function CommentSection() {
             onChange={(e) => setUser({ ...user, email: e.target.value })}
           />
         </div>
-        <p className="text-gray-500 mt-2">Logged in as: {user.role}</p>
+        <p className="mt-2 text-gray-500">Logged in as: {user.role}</p>
       </Card>
 
       {user.role === "WRITER" && (
@@ -107,7 +127,11 @@ export default function CommentSection() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="Your email" {...field} />
+                        <Input
+                          type="email"
+                          placeholder="Your email"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -120,7 +144,10 @@ export default function CommentSection() {
                     <FormItem>
                       <FormLabel>Comment</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Type your message here." {...field} />
+                        <Textarea
+                          placeholder="Type your message here."
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

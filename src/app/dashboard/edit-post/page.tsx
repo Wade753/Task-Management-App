@@ -1,11 +1,11 @@
 import React from "react";
 
-import EditFormIndex from "./[[...id]]/edit-post-prefetch";
+import { EditPostForm } from "./[[...id]]/edit-post-form";
 
 const page = () => {
   return (
     <div>
-      <EditFormIndex />
+      <EditPostForm />
     </div>
   );
 };

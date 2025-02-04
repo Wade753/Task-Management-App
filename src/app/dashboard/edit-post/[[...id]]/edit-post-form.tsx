@@ -21,39 +21,45 @@ import { type serverApi } from "@/trpc/server";
 import { postSchema } from "@/server/schemas/post-schemas";
 import { Separator } from "@/components/ui/separator";
 
-const EditPostForm = ({
-  postData,
-}: {
-  postData: Awaited<ReturnType<(typeof serverApi)["post"]["getPostById"]>>;
-}) => {
+const EditPostForm = () => {
   const router = useRouter();
   const params = useSearchParams();
   const id = params.get("id")!;
-
+  const { data, isLoading } = clientApi.post.getPostById.useQuery({
+    id: id,
+  });
   const [userRole, setUserRole] = useState<string>("ADMIN"); // Exemplu de rol al utilizatorului
 
   const form = useForm({
     resolver: zodResolver(postSchema),
     defaultValues: {
-      title: postData?.title ?? "",
-      content: postData?.content ?? "",
-      id: postData?.id ?? "",
-      published: postData?.published ?? false,
-      createdAt: postData?.createdAt
-        ? new Date(postData.createdAt)
-        : new Date(),
-      updatedAt: postData?.updatedAt
-        ? new Date(postData.updatedAt)
-        : new Date(),
-      approvedById: postData?.approvedById ?? null,
-      editedById: postData?.editedById ?? null,
-      createdById: postData?.createdById ?? "",
+      title: data?.title ?? "",
+      content: data?.content ?? "",
+      id: data?.id ?? "",
+      published: data?.published ?? false,
+      createdAt: data?.createdAt ? new Date(data.createdAt) : new Date(),
+      updatedAt: data?.updatedAt ? new Date(data.updatedAt) : new Date(),
+      approvedById: data?.approvedById ?? null,
+      editedById: data?.editedById ?? null,
+      createdById: data?.createdById ?? "",
     },
   });
+  useEffect(() => {
+    if (data) {
+      form.reset({
+        title: data.title,
+        content: data.content,
+        id: data.id,
+        published: data.published,
+        createdAt: new Date(data.createdAt),
+        updatedAt: new Date(data.updatedAt),
+        approvedById: data.approvedById,
+        editedById: data.editedById,
+        createdById: data.createdById,
+      });
+    }
+  }, [data, form]);
 
-  const { data, isLoading } = clientApi.post.getPostById.useQuery({
-    id: id,
-  });
   console.log("🚀 ~ data:", data);
 
   if (isLoading) {

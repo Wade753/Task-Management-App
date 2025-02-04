@@ -1,33 +1,39 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { ArrowRight, Star } from "lucide-react"
+import HomePageCard from "@/app/_components/homepage-card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowRight, Star } from "lucide-react";
+import HomepagePosts from "./_components/homepage-posts";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <section className="pt-32 pb-16 relative">
+    <div className="flex min-h-screen flex-col">
+      <section className="relative pb-16 pt-32">
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat mt-16"
+          className="absolute inset-0 mt-16 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage:
-              'url("blog.jpg")',
-            backgroundSize: "110%", 
+            backgroundImage: 'url("blog.jpg")',
+            backgroundSize: "110%",
           }}
         />
-        <div className="absolute inset-0 bg-black/50 mt-16" /> 
-        <div className="container px-4 md:px-6 relative">
-          <div className="flex flex-col items-center text-center space-y-8">
-            <div className="space-y-4 max-w-3xl">
-              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl text-white">
+        <div className="absolute inset-0 mt-16 bg-black/50" />
+        <div className="container relative px-4 md:px-6">
+          <div className="flex flex-col items-center space-y-8 text-center">
+            <div className="max-w-3xl space-y-4">
+              <h1 className="text-4xl font-bold tracking-tighter text-white sm:text-5xl md:text-6xl">
                 Welcome to our blog library
               </h1>
-              <p className="mx-auto max-w-[700px] text-gray-100 text-lg">
-                The professional publishing platform for creators and businesses. Start your blog, share your ideas, and
-                grow your audience.
+              <p className="mx-auto max-w-[700px] text-lg text-gray-100">
+                The professional publishing platform for creators and
+                businesses. Start your blog, share your ideas, and grow your
+                audience.
               </p>
             </div>
             <div className="mt-8">
-              <Button size="lg" variant="default" className="bg-white text-black hover:bg-gray-100">
+              <Button
+                size="lg"
+                variant="default"
+                className="bg-white text-black hover:bg-gray-100"
+              >
                 Start your blog
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -35,35 +41,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <section className="py-16 bg-background border-t">
-        <div className="container px-4 md:px-6">
-          <div className="grid gap-8 md:grid-cols-3">
-            <Card>
-              <CardContent className="p-6">
-                <Star className="h-12 w-12 mb-4 text-primary" />
-                <h3 className="text-xl font-bold mb-2">Professional Publishing</h3>
-                <p className="text-muted-foreground">Create beautiful posts and pages with our modern editor.</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <Star className="h-12 w-12 mb-4 text-primary" />
-                <h3 className="text-xl font-bold mb-2">Built for Scale</h3>
-                <p className="text-muted-foreground">Grow your audience with powerful SEO and sharing features.</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <Star className="h-12 w-12 mb-4 text-primary" />
-                <h3 className="text-xl font-bold mb-2">Membership Features</h3>
-                <p className="text-muted-foreground">Turn your audience into a business with built-in memberships.</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+      <HomepagePosts />
     </div>
-  )
+  );
 }
-
