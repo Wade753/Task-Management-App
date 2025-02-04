@@ -6,6 +6,18 @@ import {
   publicProcedure,
 } from "@/server/api/trpc";
 
+type PostsType = {
+  title: string;
+  content: string;
+  id: string;
+  published: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  approvedById: string | null;
+  editedById: string | null;
+  createdById: string;
+};
+
 export const postRouter = createTRPCRouter({
   hello: publicProcedure
     .input(z.object({ text: z.string() }))
@@ -28,25 +40,17 @@ export const postRouter = createTRPCRouter({
         },
       });
     }),
-
   getLatest: protectedProcedure.query(async ({ ctx }) => {
-    const post = await ctx.db.post.findFirst({
+    const post: PostsType | null = await ctx.db.post.findFirst({
       orderBy: { createdAt: "desc" },
       where: { createdBy: { id: ctx.session.user.id } },
     });
 
     return post ?? null;
   }),
-  //GET ALL POSTS
   getAll: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.db.post.findMany();
-
-    // {
-    //   orderBy: { createdAt: "desc" },
-    //   where: { createdById: "1" },
-    // }
-
-    // return post ?? [];
+    const posts: PostsType[] = await ctx.db.post.findMany();
+    return posts;
   }),
 
   getSecretMessage: protectedProcedure.query(() => {
