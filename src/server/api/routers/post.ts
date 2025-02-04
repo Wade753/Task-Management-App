@@ -5,19 +5,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-
-type PostsType = {
-  title: string;
-  content: string;
-  id: string;
-  published: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  approvedById: string | null;
-  editedById: string | null;
-  createdById: string;
-};
-
+import { type PostsType } from "@/server/types/post";
 export const postRouter = createTRPCRouter({
   hello: publicProcedure
     .input(z.object({ text: z.string() }))
