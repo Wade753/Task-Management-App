@@ -7,8 +7,8 @@ import { Footer } from "./_components/footer"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Kind of Wordpress Clone",
-  description: " A kind of Wordpress clone built with Next.js "
+  title: "Next.js 20 - The React Framework for the Web",
+  description: "Production grade React applications that scale.",
 }
 
 export default function RootLayout({

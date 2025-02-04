@@ -10,7 +10,7 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat mt-16"
           style={{
             backgroundImage:
-              'url("blog.jpg")',
+              'url("https://hebbkx1anhila5yf.public.blob.vercel-storage.com/lauren-mancke-aOC7TSLb1o8-unsplash.jpg-KuZzld6SmlFjtq9xEzz6YsPKZbvKD5.jpeg")',
             backgroundSize: "110%", 
           }}
         />

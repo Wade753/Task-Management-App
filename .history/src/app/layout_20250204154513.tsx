@@ -1,14 +1,14 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { Navigation } from "./_components/navigation"
-import { Footer } from "./_components/footer"
+import { Navigation } from "@/components/navigation"
+import { Footer } from "@/components/footer"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Kind of Wordpress Clone",
-  description: " A kind of Wordpress clone built with Next.js "
+  title: "Modern Publishing Platform",
+  description: "A modern publishing platform for creators and businesses",
 }
 
 export default function RootLayout({
@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>
+      <body className={inter.className}>
         <Navigation />
         <main>{children}</main>
         <Footer />

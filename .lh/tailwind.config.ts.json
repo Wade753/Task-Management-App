@@ -1,0 +1,18 @@
+{
+    "sourceFile": "tailwind.config.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1738672686710,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1738672686710,
+            "name": "Commit-0",
+            "content": "/** @type {import('tailwindcss').Config} */\r\nmodule.exports = {\r\n\tdarkMode: [\"class\"],\r\n\tcontent: [\"./pages/**/*.{ts,tsx}\", \"./components/**/*.{ts,tsx}\", \"./app/**/*.{ts,tsx}\", \"./src/**/*.{ts,tsx}\"],\r\n\ttheme: {\r\n\t  container: {\r\n\t\tcenter: true,\r\n\t\tpadding: \"2rem\",\r\n\t\tscreens: {\r\n\t\t  \"2xl\": \"1400px\",\r\n\t\t},\r\n\t  },\r\n\t  extend: {\r\n\t\tcolors: {\r\n\t\t  border: \"hsl(var(--border))\",\r\n\t\t  input: \"hsl(var(--input))\",\r\n\t\t  ring: \"hsl(var(--ring))\",\r\n\t\t  background: \"hsl(var(--background))\",\r\n\t\t  foreground: \"hsl(var(--foreground))\",\r\n\t\t  primary: {\r\n\t\t\tDEFAULT: \"hsl(var(--primary))\",\r\n\t\t\tforeground: \"hsl(var(--primary-foreground))\",\r\n\t\t  },\r\n\t\t  secondary: {\r\n\t\t\tDEFAULT: \"hsl(var(--secondary))\",\r\n\t\t\tforeground: \"hsl(var(--secondary-foreground))\",\r\n\t\t  },\r\n\t\t  destructive: {\r\n\t\t\tDEFAULT: \"hsl(var(--destructive))\",\r\n\t\t\tforeground: \"hsl(var(--destructive-foreground))\",\r\n\t\t  },\r\n\t\t  muted: {\r\n\t\t\tDEFAULT: \"hsl(var(--muted))\",\r\n\t\t\tforeground: \"hsl(var(--muted-foreground))\",\r\n\t\t  },\r\n\t\t  accent: {\r\n\t\t\tDEFAULT: \"hsl(var(--accent))\",\r\n\t\t\tforeground: \"hsl(var(--accent-foreground))\",\r\n\t\t  },\r\n\t\t  popover: {\r\n\t\t\tDEFAULT: \"hsl(var(--popover))\",\r\n\t\t\tforeground: \"hsl(var(--popover-foreground))\",\r\n\t\t  },\r\n\t\t  card: {\r\n\t\t\tDEFAULT: \"hsl(var(--card))\",\r\n\t\t\tforeground: \"hsl(var(--card-foreground))\",\r\n\t\t  },\r\n\t\t},\r\n\t\tborderRadius: {\r\n\t\t  lg: \"var(--radius)\",\r\n\t\t  md: \"calc(var(--radius) - 2px)\",\r\n\t\t  sm: \"calc(var(--radius) - 4px)\",\r\n\t\t},\r\n\t\tkeyframes: {\r\n\t\t  \"accordion-down\": {\r\n\t\t\tfrom: { height: 0 },\r\n\t\t\tto: { height: \"var(--radix-accordion-content-height)\" },\r\n\t\t  },\r\n\t\t  \"accordion-up\": {\r\n\t\t\tfrom: { height: \"var(--radix-accordion-content-height)\" },\r\n\t\t\tto: { height: 0 },\r\n\t\t  },\r\n\t\t},\r\n\t\tanimation: {\r\n\t\t  \"accordion-down\": \"accordion-down 0.2s ease-out\",\r\n\t\t  \"accordion-up\": \"accordion-up 0.2s ease-out\",\r\n\t\t},\r\n\t  },\r\n\t},\r\n\tplugins: [require(\"tailwindcss-animate\")],\r\n  }\r\n  \r\n  "
+        }
+    ]
+}

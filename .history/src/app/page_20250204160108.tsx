@@ -7,21 +7,20 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <section className="pt-32 pb-16 relative">
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat mt-16"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80 mt-16"
           style={{
             backgroundImage:
-              'url("blog.jpg")',
-            backgroundSize: "110%", 
+              'url("https://hebbkx1anhila5yf.public.blob.vercel-storage.com/lauren-mancke-aOC7TSLb1o8-unsplash.jpg-KuZzld6SmlFjtq9xEzz6YsPKZbvKD5.jpeg")',
           }}
         />
-        <div className="absolute inset-0 bg-black/50 mt-16" /> 
+        <div className="absolute inset-0 bg-black/40 mt-16" />
         <div className="container px-4 md:px-6 relative">
           <div className="flex flex-col items-center text-center space-y-8">
             <div className="space-y-4 max-w-3xl">
-              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl text-white">
+              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
                 Welcome to our blog library
               </h1>
-              <p className="mx-auto max-w-[700px] text-gray-100 text-lg">
+              <p className="mx-auto max-w-[700px] text-gray-100 text-lg drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                 The professional publishing platform for creators and businesses. Start your blog, share your ideas, and
                 grow your audience.
               </p>

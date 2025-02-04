@@ -10,11 +10,11 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat mt-16"
           style={{
             backgroundImage:
-              'url("blog.jpg")',
-            backgroundSize: "110%", 
+              'url("https://hebbkx1anhila5yf.public.blob.vercel-storage.com/lauren-mancke-aOC7TSLb1o8-unsplash.jpg-KuZzld6SmlFjtq9xEzz6YsPKZbvKD5.jpeg")',
+            backgroundSize: "110%",
           }}
         />
-        <div className="absolute inset-0 bg-black/50 mt-16" /> 
+        <div className="absolute inset-0 bg-black/50 mt-16" />
         <div className="container px-4 md:px-6 relative">
           <div className="flex flex-col items-center text-center space-y-8">
             <div className="space-y-4 max-w-3xl">
@@ -38,7 +38,7 @@ export default function Home() {
 
       <section className="py-16 bg-background border-t">
         <div className="container px-4 md:px-6">
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-3 mb-16">
             <Card>
               <CardContent className="p-6">
                 <Star className="h-12 w-12 mb-4 text-primary" />
