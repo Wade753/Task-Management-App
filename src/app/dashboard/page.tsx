@@ -1,7 +1,15 @@
 import React from "react";
+import { DashboardCard } from "@/components/common/dashboard-card";
 
-const Dashboard = () => {
-  return <div>dash</div>;
+const Dashboad = () => {
+  return (
+    <div>
+      Dashboad
+      <br />
+      <DashboardCard />
+    </div>
+  );
 };
 
-export default Dashboard;
+export default Dashboad;
+
