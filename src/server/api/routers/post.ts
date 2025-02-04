@@ -5,7 +5,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { type PostsType } from "@/server/types/post";
+import { type postType } from "@/server/schemas/post-schemas";
 export const postRouter = createTRPCRouter({
   hello: publicProcedure
     .input(z.object({ text: z.string() }))
@@ -29,15 +29,54 @@ export const postRouter = createTRPCRouter({
       });
     }),
   getLatest: protectedProcedure.query(async ({ ctx }) => {
-    const post: PostsType | null = await ctx.db.post.findFirst({
+    const post: postType | null = await ctx.db.post.findFirst({
       orderBy: { createdAt: "desc" },
       where: { createdBy: { id: ctx.session.user.id } },
     });
 
     return post ?? null;
   }),
+  getPostById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      console.log(
+        input.id,
+        "input.id==========================================================",
+      );
+
+      type extendedPostType = postType & {
+        createdBy: { name: string };
+        editedBy: { name: string } | null;
+        approvedBy: { name: string } | null;
+      };
+
+      const post: extendedPostType | null = await ctx.db.post.findUnique({
+        where: { id: input.id },
+        include: {
+          createdBy: {
+            select: {
+              name: true,
+            },
+          },
+          editedBy: {
+            select: {
+              name: true,
+            },
+          },
+          approvedBy: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      });
+
+      console.log(post);
+
+      return post;
+    }),
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const posts: PostsType[] = await ctx.db.post.findMany();
+    const posts: postType[] = await ctx.db.post.findMany();
     return posts;
   }),
 
