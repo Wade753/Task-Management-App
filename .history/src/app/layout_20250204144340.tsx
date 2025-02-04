@@ -1,14 +1,14 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { Navigation } from "./_components/navigation"
-import { Footer } from "./_components/footer"
+import { cn } from "@/lib/utils"
+import type React from "react"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Kind of Wordpress Clone",
-  description: " A kind of Wordpress clone built with Next.js "
+  description: "A modern publishing platform",
 }
 
 export default function RootLayout({
@@ -17,12 +17,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} antialiased`}>
-        <Navigation />
-        <main>{children}</main>
-        <Footer />
-      </body>
+    <html lang="en" className="dark">
+      <body className={cn(inter.className, "min-h-screen bg-background text-foreground antialiased")}>{children}</body>
     </html>
   )
 }

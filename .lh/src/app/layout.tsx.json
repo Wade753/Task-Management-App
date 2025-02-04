@@ -1,0 +1,42 @@
+{
+    "sourceFile": "src/app/layout.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 6,
+            "patches": [
+                {
+                    "date": 1738671932148,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1738672626668,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import type { Metadata } from \"next\"\r\n import { Inter } from \"next/font/google\"\r\n-import \"./globals.css\"\r\n+import \"@/app/globals.css\"\r\n import { cn } from \"@/lib/utils\"\r\n import type React from \"react\" // Added import for React\r\n \r\n const inter = Inter({ subsets: [\"latin\"] })\r\n"
+                },
+                {
+                    "date": 1738672872293,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import type { Metadata } from \"next\"\r\n import { Inter } from \"next/font/google\"\r\n-import \"@/app/globals.css\"\r\n+import \"./globals.css\" // Changed this line\r\n import { cn } from \"@/lib/utils\"\r\n-import type React from \"react\" // Added import for React\r\n+import type React from \"react\"\r\n \r\n const inter = Inter({ subsets: [\"latin\"] })\r\n \r\n export const metadata: Metadata = {\r\n"
+                },
+                {
+                    "date": 1738673021843,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import type { Metadata } from \"next\"\r\n import { Inter } from \"next/font/google\"\r\n-import \"./globals.css\" // Changed this line\r\n+import \"./globals.css\"\r\n import { cn } from \"@/lib/utils\"\r\n import type React from \"react\"\r\n \r\n const inter = Inter({ subsets: [\"latin\"] })\r\n"
+                },
+                {
+                    "date": 1738676715040,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,25 +1,29 @@\n import type { Metadata } from \"next\"\r\n import { Inter } from \"next/font/google\"\r\n import \"./globals.css\"\r\n-import { cn } from \"@/lib/utils\"\r\n-import type React from \"react\"\r\n+import { Navigation } from \"@/components/navigation\"\r\n+import { Footer } from \"@/components/footer\"\r\n \r\n const inter = Inter({ subsets: [\"latin\"] })\r\n \r\n export const metadata: Metadata = {\r\n-  title: \"Kind of Wordpress Clone\",\r\n-  description: \"A modern publishing platform\",\r\n+  title: \"Modern Publishing Platform\",\r\n+  description: \"A modern publishing platform for creators and businesses\",\r\n }\r\n \r\n export default function RootLayout({\r\n   children,\r\n }: {\r\n   children: React.ReactNode\r\n }) {\r\n   return (\r\n-    <html lang=\"en\" className=\"dark\">\r\n-      <body className={cn(inter.className, \"min-h-screen bg-background text-foreground antialiased\")}>{children}</body>\r\n+    <html lang=\"en\">\r\n+      <body className={inter.className}>\r\n+        <Navigation />\r\n+        <main>{children}</main>\r\n+        <Footer />\r\n+      </body>\r\n     </html>\r\n   )\r\n }\r\n \r\n"
+                },
+                {
+                    "date": 1738676861914,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,15 +1,15 @@\n import type { Metadata } from \"next\"\r\n import { Inter } from \"next/font/google\"\r\n import \"./globals.css\"\r\n-import { Navigation } from \"@/components/navigation\"\r\n-import { Footer } from \"@/components/footer\"\r\n+import { Navigation } from \"./_components/navigation\"\r\n+import { Footer } from \"./_components/footer\"\r\n \r\n const inter = Inter({ subsets: [\"latin\"] })\r\n \r\n export const metadata: Metadata = {\r\n-  title: \"Modern Publishing Platform\",\r\n-  description: \"A modern publishing platform for creators and businesses\",\r\n+  title: \"Next.js 20 - The React Framework for the Web\",\r\n+  description: \"Production grade React applications that scale.\",\r\n }\r\n \r\n export default function RootLayout({\r\n   children,\r\n@@ -17,9 +17,9 @@\n   children: React.ReactNode\r\n }) {\r\n   return (\r\n     <html lang=\"en\">\r\n-      <body className={inter.className}>\r\n+      <body className={`${inter.className} antialiased`}>\r\n         <Navigation />\r\n         <main>{children}</main>\r\n         <Footer />\r\n       </body>\r\n"
+                },
+                {
+                    "date": 1738689541282,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,10 +6,10 @@\n \r\n const inter = Inter({ subsets: [\"latin\"] })\r\n \r\n export const metadata: Metadata = {\r\n-  title: \"Next.js 20 - The React Framework for the Web\",\r\n-  description: \"Production grade React applications that scale.\",\r\n+  title: \"Kind of Wordpress Clone\",\r\n+  description: \" A kind of Wordpress clone built with Next.js \"\r\n }\r\n \r\n export default function RootLayout({\r\n   children,\r\n"
+                }
+            ],
+            "date": 1738671932148,
+            "name": "Commit-0",
+            "content": "import type { Metadata } from \"next\"\r\nimport { Inter } from \"next/font/google\"\r\nimport \"./globals.css\"\r\nimport { cn } from \"@/lib/utils\"\r\nimport type React from \"react\" // Added import for React\r\n\r\nconst inter = Inter({ subsets: [\"latin\"] })\r\n\r\nexport const metadata: Metadata = {\r\n  title: \"Kind of Wordpress Clone\",\r\n  description: \"A modern publishing platform\",\r\n}\r\n\r\nexport default function RootLayout({\r\n  children,\r\n}: {\r\n  children: React.ReactNode\r\n}) {\r\n  return (\r\n    <html lang=\"en\" className=\"dark\">\r\n      <body className={cn(inter.className, \"min-h-screen bg-background text-foreground antialiased\")}>{children}</body>\r\n    </html>\r\n  )\r\n}\r\n\r\n"
+        }
+    ]
+}

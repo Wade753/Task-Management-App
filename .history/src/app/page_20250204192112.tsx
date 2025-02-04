@@ -10,7 +10,7 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat mt-16"
           style={{
             backgroundImage:
-              'url("blog.jpg")',
+              '/blog.jpg',
             backgroundSize: "110%", 
           }}
         />
