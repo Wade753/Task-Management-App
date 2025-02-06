@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 11,
+            "activePatchIndex": 15,
             "patches": [
                 {
                     "date": 1738677240621,
@@ -52,6 +52,22 @@
                 {
                     "date": 1738678921030,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,9 @@\n     <header className=\"fixed top-0 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50\">\r\n       <nav className=\"container flex h-16 items-center justify-between\">\r\n         <div className=\"flex items-center gap-6\">\r\n           <Link href=\"/\" className=\"font-semibold text-xl\">\r\n-            BlogLibrary\r\n+            Kind of Wordpress Clone\r\n           </Link>\r\n           <div className=\"hidden md:flex gap-6\">\r\n             <DropdownMenu>\r\n               <DropdownMenuTrigger className=\"flex items-center gap-1 text-muted-foreground hover:text-foreground outline-none\">\r\n"
+                },
+                {
+                    "date": 1738848227580,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,9 @@\n     <header className=\"fixed top-0 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50\">\r\n       <nav className=\"container flex h-16 items-center justify-between\">\r\n         <div className=\"flex items-center gap-6\">\r\n           <Link href=\"/\" className=\"font-semibold text-xl\">\r\n-            Kind of Wordpress Clone\r\n+            BlogLibrary\r\n           </Link>\r\n           <div className=\"hidden md:flex gap-6\">\r\n             <DropdownMenu>\r\n               <DropdownMenuTrigger className=\"flex items-center gap-1 text-muted-foreground hover:text-foreground outline-none\">\r\n@@ -67,10 +67,14 @@\n             </Link>\r\n           </div>\r\n         </div>\r\n         <div className=\"flex items-center gap-4\">\r\n-          <Button variant=\"ghost\">Log in</Button>\r\n-          <Button>Sign up</Button>\r\n+          <Button variant=\"ghost\" asChild>\r\n+            <Link href=\"/login\">Sign in</Link>\r\n+          </Button>\r\n+          <Button asChild>\r\n+            <Link href=\"/signup\">Get started</Link>\r\n+          </Button>\r\n         </div>\r\n       </nav>\r\n     </header>\r\n   )\r\n"
+                },
+                {
+                    "date": 1738848447979,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,9 @@\n     <header className=\"fixed top-0 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50\">\r\n       <nav className=\"container flex h-16 items-center justify-between\">\r\n         <div className=\"flex items-center gap-6\">\r\n           <Link href=\"/\" className=\"font-semibold text-xl\">\r\n-            BlogLibrary\r\n+            Kind of Wordpress Library\r\n           </Link>\r\n           <div className=\"hidden md:flex gap-6\">\r\n             <DropdownMenu>\r\n               <DropdownMenuTrigger className=\"flex items-center gap-1 text-muted-foreground hover:text-foreground outline-none\">\r\n"
+                },
+                {
+                    "date": 1738848513677,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,9 @@\n \r\n export function Navigation() {\r\n   return (\r\n     <header className=\"fixed top-0 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50\">\r\n-      <nav className=\"container flex h-16 items-center justify-between\">\r\n+      <nav className=\"container flex h-16 items-left justify-between\">\r\n         <div className=\"flex items-center gap-6\">\r\n           <Link href=\"/\" className=\"font-semibold text-xl\">\r\n             Kind of Wordpress Library\r\n           </Link>\r\n"
+                },
+                {
+                    "date": 1738848524754,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,9 @@\n \r\n export function Navigation() {\r\n   return (\r\n     <header className=\"fixed top-0 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50\">\r\n-      <nav className=\"container flex h-16 items-left justify-between\">\r\n+      <nav className=\"container flex h-16 items-center justify-between\">\r\n         <div className=\"flex items-center gap-6\">\r\n           <Link href=\"/\" className=\"font-semibold text-xl\">\r\n             Kind of Wordpress Library\r\n           </Link>\r\n"
                 }
             ],
             "date": 1738677240621,

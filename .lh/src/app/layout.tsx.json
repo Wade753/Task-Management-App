@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 6,
+            "activePatchIndex": 8,
             "patches": [
                 {
                     "date": 1738671932148,
@@ -32,6 +32,14 @@
                 {
                     "date": 1738689541282,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,10 +6,10 @@\n \r\n const inter = Inter({ subsets: [\"latin\"] })\r\n \r\n export const metadata: Metadata = {\r\n-  title: \"Next.js 20 - The React Framework for the Web\",\r\n-  description: \"Production grade React applications that scale.\",\r\n+  title: \"Kind of Wordpress Clone\",\r\n+  description: \" A kind of Wordpress clone built with Next.js \"\r\n }\r\n \r\n export default function RootLayout({\r\n   children,\r\n"
+                },
+                {
+                    "date": 1738848399234,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,14 +2,16 @@\n import { Inter } from \"next/font/google\"\r\n import \"./globals.css\"\r\n import { Navigation } from \"./_components/navigation\"\r\n import { Footer } from \"./_components/footer\"\r\n+import { TRPCReactProvider } from \"@/trpc/react\"\r\n+import type React from \"react\" // Added import for React\r\n \r\n const inter = Inter({ subsets: [\"latin\"] })\r\n \r\n export const metadata: Metadata = {\r\n   title: \"Kind of Wordpress Clone\",\r\n-  description: \" A kind of Wordpress clone built with Next.js \"\r\n+  description: \" A kind of Wordpress clone built with Next.js \",\r\n }\r\n \r\n export default function RootLayout({\r\n   children,\r\n@@ -19,9 +21,11 @@\n   return (\r\n     <html lang=\"en\">\r\n       <body className={`${inter.className} antialiased`}>\r\n         <Navigation />\r\n-        <main>{children}</main>\r\n+        <main>\r\n+          <TRPCReactProvider>{children}</TRPCReactProvider>\r\n+        </main>\r\n         <Footer />\r\n       </body>\r\n     </html>\r\n   )\r\n"
+                },
+                {
+                    "date": 1738848428105,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,9 +3,9 @@\n import \"./globals.css\"\r\n import { Navigation } from \"./_components/navigation\"\r\n import { Footer } from \"./_components/footer\"\r\n import { TRPCReactProvider } from \"@/trpc/react\"\r\n-import type React from \"react\" // Added import for React\r\n+import type React from \"react\"\r\n \r\n const inter = Inter({ subsets: [\"latin\"] })\r\n \r\n export const metadata: Metadata = {\r\n"
                 }
             ],
             "date": 1738671932148,
