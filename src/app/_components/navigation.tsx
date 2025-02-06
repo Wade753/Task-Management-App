@@ -9,7 +9,7 @@ export function Navigation() {
       <nav className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href="/" className="font-semibold text-xl">
-            Kind of Wordpress Clone
+            Kind of Wordpress Library
           </Link>
           <div className="hidden md:flex gap-6">
             <DropdownMenu>
@@ -68,8 +68,12 @@ export function Navigation() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="ghost">Log in</Button>
-          <Button>Sign up</Button>
+          <Button variant="ghost" asChild>
+            <Link href="/login">Sign in</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/signup">Get started</Link>
+          </Button>
         </div>
       </nav>
     </header>
