@@ -20,6 +20,7 @@ import { type serverApi } from "@/trpc/server";
 
 import { postSchema } from "@/server/schemas/post-schemas";
 import { Separator } from "@/components/ui/separator";
+import MDEditor from "@uiw/react-md-editor";
 
 const EditPostForm = () => {
   const router = useRouter();
@@ -29,6 +30,8 @@ const EditPostForm = () => {
     id: id,
   });
   const [userRole, setUserRole] = useState<string>("ADMIN"); // Exemplu de rol al utilizatorului
+
+  const [editorContent, setEditorContent] = useState(data?.content);
 
   const form = useForm({
     resolver: zodResolver(postSchema),
@@ -57,6 +60,7 @@ const EditPostForm = () => {
         editedById: data.editedById,
         createdById: data.createdById,
       });
+      setEditorContent(data.content);
     }
   }, [data, form]);
 
@@ -160,11 +164,22 @@ const EditPostForm = () => {
               <FormItem>
                 <FormLabel className="text-xl font-semibold">Content</FormLabel>
                 <FormControl>
-                  <Textarea
+                  {/* <Textarea
                     placeholder="Write here..."
                     rows={10}
                     {...field}
                     className="p-3 text-base"
+                  /> */}
+                  <MDEditor
+                    id="editor"
+                    className="rounded-md border p-2"
+                    onChange={(value) => {
+                      setEditorContent(value);
+                      field.onChange(value);
+                    }}
+                    value={editorContent}
+                    autoCapitalize="none"
+                    // data-color-mode="light"
                   />
                 </FormControl>
                 <FormMessage />

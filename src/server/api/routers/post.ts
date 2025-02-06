@@ -5,17 +5,13 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { type postType } from "@/server/schemas/post-schemas";
+import {
+  type extendedPostType,
+  type postType,
+} from "@/server/schemas/post-schemas";
 export const postRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
   //ADD POST TO DB
-  create: publicProcedure //protectedProcedure
+  create: protectedProcedure //protectedProcedure
     .input(z.object({ title: z.string().min(1), content: z.string().min(10) }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.post.create({
@@ -23,8 +19,7 @@ export const postRouter = createTRPCRouter({
           title: input.title,
           content: input.content,
           published: true,
-          // createdBy: { connect: { id: ctx.session.user.id } },
-          createdBy: { connect: { id: "1" } },
+          createdBy: { connect: { id: ctx.session.user.id } },
         },
       });
     }),
@@ -39,17 +34,6 @@ export const postRouter = createTRPCRouter({
   getPostById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      console.log(
-        input.id,
-        "input.id==========================================================",
-      );
-
-      type extendedPostType = postType & {
-        createdBy: { name: string };
-        editedBy: { name: string } | null;
-        approvedBy: { name: string } | null;
-      };
-
       const post: extendedPostType | null = await ctx.db.post.findUnique({
         where: { id: input.id },
         include: {
@@ -76,7 +60,26 @@ export const postRouter = createTRPCRouter({
       return post;
     }),
   getAll: publicProcedure.query(async ({ ctx }) => {
-    const posts: postType[] = await ctx.db.post.findMany();
+    const posts: extendedPostType[] = await ctx.db.post.findMany({
+      include: {
+        createdBy: {
+          select: {
+            name: true,
+          },
+        },
+        editedBy: {
+          select: {
+            name: true,
+          },
+        },
+        approvedBy: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
     return posts;
   }),
 
