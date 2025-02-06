@@ -18,10 +18,14 @@ import { Textarea } from "@/components/ui/textarea";
 //GET ALL POSTS
 
 function DashboardCard() {
-  const { data, isLoading } = clientApi.post.getAll.useQuery();
+  const { data, isLoading, isError } = clientApi.post.getAll.useQuery();
 
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error</div>;
   }
 
   return (

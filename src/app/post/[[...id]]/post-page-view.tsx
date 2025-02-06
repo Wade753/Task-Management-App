@@ -36,7 +36,10 @@ const PostPageView = () => {
               </span>
             )}
           </div>
-          <div className="mb-6 text-gray-800">{data.content}</div>
+          <div
+            className="mb-6 text-gray-800"
+            dangerouslySetInnerHTML={{ __html: data.content }}
+          />
           <div className="text-gray-600">
             <span>Created by: {data.createdBy.name}</span>
             {data.editedBy && (

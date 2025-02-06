@@ -142,6 +142,8 @@ export default function AddNewPostForm() {
                         field.onChange(value);
                       }}
                       value={editorContent}
+                      autoCapitalize="none"
+                      // data-color-mode="light"
                     />
                   </FormControl>
                   <FormMessage />
