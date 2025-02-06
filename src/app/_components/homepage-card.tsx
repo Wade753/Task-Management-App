@@ -1,27 +1,53 @@
-"use client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { type postType } from "@/server/schemas/post-schemas";
-import { useRouter } from "next/navigation";
+"use client"
 
-export default function HomepageCard({ data }: { data: postType }) {
-  const excerpt =
-    data.content.length > 300
-      ? data.content.substring(0, 300) + "..."
-      : data.content;
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
+import { useRouter } from "next/navigation"
 
-  const router = useRouter();
+interface PostType {
+  id: string
+  title: string
+  content: string
+  author: string
+  createdAt: string
+  job: string
+  imageUrl?: string
+}
+
+interface HomepageCardProps {
+  data: PostType
+  index: number
+  color: string
+}
+
+const getTextColor = (backgroundColor: string): string => {
+  const darkColors = ["bg-blue-500", "bg-purple-500", "bg-indigo-500"]
+  return darkColors.includes(backgroundColor) ? "text-white" : "text-black"
+}
+
+export default function HomepageCard({ data, index, color }: HomepageCardProps) {
+  const router = useRouter()
+  const textColor = getTextColor(color)
 
   return (
     <Card
-      className="mx-auto w-full max-w-md transition-shadow hover:shadow-lg"
+      className={`rounded-xl shadow mx-auto w-full transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer overflow-hidden ${color} ${textColor}`}
       onClick={() => router.push(`/post?id=${data.id}`)}
     >
-      <CardHeader className="p-4">
-        <CardTitle className="text-xl font-semibold">{data.title}</CardTitle>
-      </CardHeader>
-      <CardContent className="p-4 text-gray-600">
-        <p>{excerpt}</p>
+      <div className="aspect-[4/3] relative flex items-center justify-center p-6 bg-opacity-90">
+        <p className="text-lg font-medium text-center drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-white">
+          {data.content}
+        </p>
+      </div>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between text-sm">
+          <div>
+            <CardTitle className="text-lg font-bold mb-1">{data.title}</CardTitle>
+            <span className="opacity-75">{data.job}</span>
+          </div>
+          <span>{new Date(data.createdAt).toLocaleDateString()}</span>
+        </div>
       </CardContent>
     </Card>
-  );
+  )
 }
+
