@@ -36,4 +36,30 @@ export const userRouter = createTRPCRouter({
         },
       });
     }),
+
+  resetPassword: publicProcedure
+    .input(
+      z.object({
+        email: z.string().email(),
+        newPassword: z.string().min(6),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { email, newPassword } = input;
+
+      // Verifică dacă utilizatorul există
+      const user = await ctx.db.user.findUnique({
+        where: { email: sanitizeEmail(email) },
+      });
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      // Actualizează parola utilizatorului
+      return ctx.db.user.update({
+        where: { email: sanitizeEmail(email) },
+        data: { password: await hashPassword(newPassword) },
+      });
+    }),
 });
