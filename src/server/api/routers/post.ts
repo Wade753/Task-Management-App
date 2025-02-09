@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -9,9 +8,10 @@ import {
   type extendedPostType,
   type postType,
 } from "@/server/schemas/post-schemas";
+
 export const postRouter = createTRPCRouter({
-  //ADD POST TO DB
-  create: protectedProcedure //protectedProcedure
+  // ADD POST TO DB
+  create: protectedProcedure
     .input(z.object({ title: z.string().min(1), content: z.string().min(10) }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.post.create({
@@ -23,6 +23,7 @@ export const postRouter = createTRPCRouter({
         },
       });
     }),
+
   getLatest: protectedProcedure.query(async ({ ctx }) => {
     const post: postType | null = await ctx.db.post.findFirst({
       orderBy: { createdAt: "desc" },
@@ -31,6 +32,7 @@ export const postRouter = createTRPCRouter({
 
     return post ?? null;
   }),
+
   getPostById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -59,6 +61,7 @@ export const postRouter = createTRPCRouter({
 
       return post;
     }),
+
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts: extendedPostType[] = await ctx.db.post.findMany({
       include: {
@@ -82,6 +85,47 @@ export const postRouter = createTRPCRouter({
     });
     return posts;
   }),
+
+  approvePost: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (
+        ctx.session.user.role !== "WRITER" &&
+        ctx.session.user.role !== "ADMIN"
+      ) {
+        throw new Error("Unauthorized");
+      }
+      return ctx.db.post.update({
+        where: { id: input.id },
+        data: { approvedById: ctx.session.user.id },
+      });
+    }),
+
+  publishPost: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.session.user.role !== "ADMIN") {
+        throw new Error("Unauthorized");
+      }
+      return ctx.db.post.update({
+        where: { id: input.id },
+        data: { published: true },
+      });
+    }),
+
+  deletePost: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (
+        ctx.session.user.role !== "WRITER" &&
+        ctx.session.user.role !== "ADMIN"
+      ) {
+        throw new Error("Unauthorized");
+      }
+      return ctx.db.post.delete({
+        where: { id: input.id },
+      });
+    }),
 
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
