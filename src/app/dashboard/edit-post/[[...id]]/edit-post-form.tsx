@@ -14,13 +14,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
 import { clientApi } from "@/trpc/react";
-import { type serverApi } from "@/trpc/server";
-
 import { postSchema } from "@/server/schemas/post-schemas";
 import { Separator } from "@/components/ui/separator";
 import MDEditor from "@uiw/react-md-editor";
+
+const canApprove = (role: string) => role === "WRITER" || role === "ADMIN";
+const canPublish = (role: string) => role === "ADMIN";
+const canDelete = (role: string) => role === "WRITER" || role === "ADMIN";
 
 const EditPostForm = () => {
   const router = useRouter();
@@ -29,7 +30,7 @@ const EditPostForm = () => {
   const { data, isLoading } = clientApi.post.getPostById.useQuery({
     id: id,
   });
-  const [userRole, setUserRole] = useState<string>("ADMIN"); // Exemplu de rol al utilizatorului
+  const [userRole, setUserRole] = useState<string>("ADMIN");
 
   const [editorContent, setEditorContent] = useState(data?.content);
 
@@ -47,6 +48,7 @@ const EditPostForm = () => {
       createdById: data?.createdById ?? "",
     },
   });
+
   useEffect(() => {
     if (data) {
       form.reset({
@@ -64,8 +66,6 @@ const EditPostForm = () => {
     }
   }, [data, form]);
 
-  console.log("🚀 ~ data:", data);
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -73,47 +73,58 @@ const EditPostForm = () => {
   if (!id) {
     router.push("/dashboard");
   }
-  console.log(data);
 
-  const onSubmit = (data: z.infer<typeof postSchema>) => {
-    console.log(data);
-    // Logica pentru salvarea postării
-    // fetch(`/api/posts/${postId}`, {
-    //   method: "PUT",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ ...data, editedBy: "currentUserId" }), // Adaugă ID-ul utilizatorului curent
-    // })
-    //   .then((response) => response.json())
-    //   .then(() => {
-    //     router.push("/dashboard").catch((err) => console.error(err));
-    //   })
-    //   .catch((err) => console.error(err));
+  const onSubmit = async (data: z.infer<typeof postSchema>) => {
+    try {
+      const { mutateAsync } = clientApi.post.updatePost.useMutation();
+      await mutateAsync({
+        id: data.id,
+        ...data,
+        editedById: "currentUserId", // Adaugă ID-ul utilizatorului curent
+      });
+      router.push("/dashboard");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleApprove = () => {
-    // Logica pentru aprobarea postării
-    // fetch(`/api/posts/${postId}/approve`, {
-    //   method: "POST",
-    // })
-    //   .then((response) => response.json())
-    //   .then(() => {
-    //     router.push("/dashboard").catch((err) => console.error(err));
-    //   })
-    //   .catch((err) => console.error(err));
+  const handleApprove = async () => {
+    if (!canApprove(userRole)) {
+      throw new Error("Unauthorized");
+    }
+    try {
+      const { mutateAsync } = clientApi.post.approvePost.useMutation();
+      await mutateAsync({ id: id });
+      router.push("/dashboard");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handlePublish = () => {
-    // Logica pentru publicarea postării
-    // fetch(`/api/posts/${postId}/publish`, {
-    //   method: "POST",
-    // })
-    //   .then((response) => response.json())
-    //   .then(() => {
-    //     router.push("/dashboard").catch((err) => console.error(err));
-    //   })
-    //   .catch((err) => console.error(err));
+  const handlePublish = async () => {
+    if (!canPublish(userRole)) {
+      throw new Error("Unauthorized");
+    }
+    try {
+      const { mutateAsync } = clientApi.post.publishPost.useMutation();
+      await mutateAsync({ id: id });
+      router.push("/dashboard");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!canDelete(userRole)) {
+      throw new Error("Unauthorized");
+    }
+    try {
+      const { mutateAsync } = clientApi.post.deletePost.useMutation();
+      await mutateAsync({ id: id });
+      router.push("/dashboard");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -122,14 +133,14 @@ const EditPostForm = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Edit Content</h1>
         <div className="space-x-2">
-          {userRole === "EDITOR" && (
+          {canApprove(userRole) && (
             <Button onClick={handleApprove}>Approve</Button>
           )}
-          {userRole === "ADMIN" && (
-            <>
-              <Button onClick={handleApprove}>Approve</Button>
-              <Button onClick={handlePublish}>Publish</Button>
-            </>
+          {canPublish(userRole) && (
+            <Button onClick={handlePublish}>Publish</Button>
+          )}
+          {canDelete(userRole) && (
+            <Button onClick={handleDelete}>Delete</Button>
           )}
         </div>
       </div>
@@ -164,12 +175,6 @@ const EditPostForm = () => {
               <FormItem>
                 <FormLabel className="text-xl font-semibold">Content</FormLabel>
                 <FormControl>
-                  {/* <Textarea
-                    placeholder="Write here..."
-                    rows={10}
-                    {...field}
-                    className="p-3 text-base"
-                  /> */}
                   <MDEditor
                     id="editor"
                     className="rounded-md border p-2"
@@ -179,7 +184,6 @@ const EditPostForm = () => {
                     }}
                     value={editorContent}
                     autoCapitalize="none"
-                    // data-color-mode="light"
                   />
                 </FormControl>
                 <FormMessage />
