@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { startTransition, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,12 +18,14 @@ import { clientApi } from "@/trpc/react";
 import { postSchema } from "@/server/schemas/post-schemas";
 import { Separator } from "@/components/ui/separator";
 import MDEditor from "@uiw/react-md-editor";
+import { useToast } from "@/hooks/use-toast";
 
 const canApprove = (role: string) => role === "WRITER" || role === "ADMIN";
 const canPublish = (role: string) => role === "ADMIN";
 const canDelete = (role: string) => role === "WRITER" || role === "ADMIN";
 
 const EditPostForm = () => {
+  const { toast } = useToast();
   const router = useRouter();
   const params = useSearchParams();
   const id = params.get("id")!;
@@ -33,6 +35,82 @@ const EditPostForm = () => {
   const [userRole, setUserRole] = useState<string>("ADMIN");
 
   const [editorContent, setEditorContent] = useState(data?.content);
+
+  const updatePost = clientApi.post.updatePost.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Post updated",
+        description: "Your post has been updated successfully",
+        variant: "success",
+      });
+    },
+  });
+  const onSubmit = async (data: z.infer<typeof postSchema>) => {
+    console.log(data);
+    startTransition(async () => {
+      await updatePost.mutateAsync(data);
+    });
+  };
+
+  const approvePost = clientApi.post.approvePost.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Post approved",
+        description: "Your post has been approved successfully",
+        variant: "success",
+      });
+    },
+  });
+  const handleApprove = async () => {
+    if (!canApprove(userRole)) {
+      throw new Error("Unauthorized");
+    }
+    try {
+      await approvePost.mutateAsync({ id: id });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const publishPost = clientApi.post.publishPost.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Post published",
+        description: "Your post has been published successfully",
+        variant: "success",
+      });
+    },
+  });
+  const handlePublish = async () => {
+    if (!canPublish(userRole)) {
+      throw new Error("Unauthorized");
+    }
+    try {
+      await publishPost.mutateAsync({ id: id });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const deletePost = clientApi.post.deletePost.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Post deleted",
+        description: "Your post has been deleted successfully",
+        variant: "success",
+      });
+      router.push("/dashboard");
+    },
+  });
+  const handleDelete = async () => {
+    if (!canDelete(userRole)) {
+      throw new Error("Unauthorized");
+    }
+    try {
+      await deletePost.mutateAsync({ id: id });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const form = useForm({
     resolver: zodResolver(postSchema),
@@ -73,60 +151,7 @@ const EditPostForm = () => {
   if (!id) {
     router.push("/dashboard");
   }
-
-  const onSubmit = async (data: z.infer<typeof postSchema>) => {
-    try {
-      const { mutateAsync } = clientApi.post.updatePost.useMutation();
-      await mutateAsync({
-        id: data.id,
-        ...data,
-        editedById: "currentUserId", // Adaugă ID-ul utilizatorului curent
-      });
-      router.push("/dashboard");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleApprove = async () => {
-    if (!canApprove(userRole)) {
-      throw new Error("Unauthorized");
-    }
-    try {
-      const { mutateAsync } = clientApi.post.approvePost.useMutation();
-      await mutateAsync({ id: id });
-      router.push("/dashboard");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handlePublish = async () => {
-    if (!canPublish(userRole)) {
-      throw new Error("Unauthorized");
-    }
-    try {
-      const { mutateAsync } = clientApi.post.publishPost.useMutation();
-      await mutateAsync({ id: id });
-      router.push("/dashboard");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!canDelete(userRole)) {
-      throw new Error("Unauthorized");
-    }
-    try {
-      const { mutateAsync } = clientApi.post.deletePost.useMutation();
-      await mutateAsync({ id: id });
-      router.push("/dashboard");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
+  console.log(form.formState.errors, form.formState);
   return (
     <div className="mx-auto max-w-4xl space-y-6 p-6">
       {/* Top Buttons */}

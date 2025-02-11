@@ -5,6 +5,7 @@ import { Navigation } from "./_components/navigation";
 import { Footer } from "./_components/footer";
 import { TRPCReactProvider } from "@/trpc/react";
 import type React from "react";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,9 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <Navigation />
         <main>
-          <TRPCReactProvider>{children}</TRPCReactProvider>
+          <ThemeProvider>
+            <TRPCReactProvider>{children}</TRPCReactProvider>
+          </ThemeProvider>
         </main>
         <Footer />
       </body>

@@ -52,7 +52,7 @@ const PostPageView = () => {
         </div>
       </div>
 
-      <CommentSection />
+      <CommentSection postId={id} />
     </>
   );
 };
