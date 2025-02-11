@@ -1,166 +1,231 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Heart, MessageCircle } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { clientApi } from "@/trpc/react";
+import { z } from "zod";
 
-const commentSchema = z.object({
-  id: z.string().uuid().optional(),
+const commentCreateSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   email: z.string().email("Invalid email address."),
   message: z.string().min(5, "Comment must be at least 5 characters."),
-  approved: z.boolean().optional(),
-  createdAt: z.date().optional(),
   postId: z.string().uuid(),
 });
 
-export default function CommentSection() {
-  const [user, setUser] = useState({ name: "", email: "", role: "GUEST" });
+interface Comment {
+  id: number | string;
+  name: string;
+  email: string;
+  message: string;
+  createdAt: Date;
+}
 
-  const form = useForm<z.infer<typeof commentSchema>>({
-    resolver: zodResolver(commentSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      comment: "",
-      postId: "1",
+interface CommentsSectionProps {
+  postId?: string;
+}
+
+const CommentsSection: React.FC<CommentsSectionProps> = ({
+  postId = "123e4567-e89b-12d3-a456-426614174000",
+}) => {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
+  const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
+
+  const [replyTo, setReplyTo] = useState<Comment | null>(null);
+
+  const { data: fetchedComments, refetch } = clientApi.comment.getApproved.useQuery();
+
+  useEffect(() => {
+    const storedName = localStorage.getItem("commentName");
+    const storedEmail = localStorage.getItem("commentEmail");
+    if (storedName) setName(storedName);
+    if (storedEmail) setEmail(storedEmail);
+  }, []);
+
+  useEffect(() => {
+    if (fetchedComments) {
+      setComments(
+        fetchedComments.map((comment) => ({
+          ...comment,
+          createdAt: new Date(comment.createdAt),
+        }))
+      );
+    }
+  }, [fetchedComments]);
+
+  useEffect(() => {
+    if (dialogOpen && replyTo && message.trim() === "") {
+      setMessage(`@${replyTo.name} `);
+    }
+  }, [dialogOpen, replyTo, message]); // Am adăugat 'message' în dependențe
+
+  const createComment = clientApi.comment.create.useMutation({
+    onSuccess: () => {
+      localStorage.setItem("commentName", name);
+      localStorage.setItem("commentEmail", email);
+
+      setMessage("");
+      setErrors({});
+      setDialogOpen(false);
+      setReplyTo(null);
+      alert("Comment submitted successfully for approval!");
+      void refetch(); // Marcat cu 'void' pentru a ignora promisiunea returnată
+    },
+    onError: (error) => {
+      console.error("Error creating comment:", error);
+      alert("Failed to submit the comment. Please try again.");
     },
   });
 
-  useEffect(() => {
-    if (user.email.includes("admin@")) {
-      setUser((prev) => ({ ...prev, role: "ADMIN" }));
-    } else if (user.email.includes("editor@")) {
-      setUser((prev) => ({ ...prev, role: "EDITOR" }));
-    } else {
-      setUser((prev) => ({ ...prev, role: "WRITER" }));
-    }
-  }, [user.email]);
-
-  const createCommentMutation = clientApi.comment.create.useMutation();
-
-  const onSubmit = async (values: z.infer<typeof commentSchema>) => {
-    try {
-      await createCommentMutation.mutateAsync({
-        name: values.name,
-        email: values.email,
-        message: values.comment,
-        id: values.postId,
+  const handleSubmit = () => {
+    const result = commentCreateSchema.safeParse({ name, email, message, postId });
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+      setErrors({
+        name: fieldErrors.name?.[0],
+        email: fieldErrors.email?.[0],
+        message: fieldErrors.message?.[0],
       });
-      form.reset();
-    } catch (error) {
-      console.error("Error creating comment:", error);
+      return;
     }
+    setErrors({});
+    createComment.mutate({ name, email, message, postId });
   };
 
   return (
-    <div className="p-4">
-      <Card className="mb-4 p-4">
-        <h2 className="mb-2 text-xl font-semibold">Login</h2>
-        <div className="flex gap-2">
-          <Input
-            type="text"
-            placeholder="Name"
-            value={user.name}
-            onChange={(e) => setUser({ ...user, name: e.target.value })}
-          />
-          <Input
-            type="email"
-            placeholder="Email"
-            value={user.email}
-            onChange={(e) => setUser({ ...user, email: e.target.value })}
-          />
-        </div>
-        <p className="mt-2 text-gray-500">Logged in as: {user.role}</p>
+    <div className="w-full max-w-xl mx-auto space-y-4">
+      <Card className="p-4 h-[360px] overflow-y-auto border border-gray-200 rounded-lg">
+        {comments.length === 0 ? (
+          <p className="text-center text-gray-500">Be the first to leave a comment!</p>
+        ) : (
+          <div className="space-y-4">
+            {comments.map((comment, index) => (
+              <div key={index} className="flex items-start space-x-4 p-2 border-b text-sm">
+                <div className="flex flex-col items-center w-20">
+                  <Avatar className="w-10 h-10">
+                    <AvatarFallback>{comment.name[0]}</AvatarFallback>
+                  </Avatar>
+                  <p className="text-xs font-bold mt-1 text-center">{comment.name}</p>
+                  <p className="text-[10px] text-gray-500 text-center">{comment.email}</p>
+                </div>
+
+                <div className="flex-1">
+                  <div className="p-2 border rounded-lg max-h-24 overflow-y-auto text-xs bg-gray-100 w-full">
+                    {comment.message}
+                  </div>
+                  <div className="flex items-center justify-between mt-1 text-xs text-gray-500">
+                    <p>
+                      {formatDistanceToNow(new Date(comment.createdAt), {
+                        addSuffix: true,
+                      })}
+                    </p>
+                    <div className="flex space-x-2">
+                      <Button variant="ghost" size="sm">
+                        <Heart className="w-4 h-4 text-gray-500" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setReplyTo(comment);
+                          setDialogOpen(true);
+                        }}
+                      >
+                        <MessageCircle className="w-4 h-4 text-gray-500" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </Card>
 
-      {user.role === "WRITER" && (
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="default">Add Comment</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Comment</DialogTitle>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input type="text" placeholder="Your name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="Your email"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="comment"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Comment</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Type your message here."
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <DialogFooter>
-                  <Button type="submit">Submit</Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-      )}
+      <Button
+        className="w-full text-sm"
+        onClick={() => {
+          setReplyTo(null);
+          setDialogOpen(true);
+        }}
+      >
+        Add Comment
+      </Button>
+
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(open) => {
+          if (!open) setReplyTo(null);
+          setDialogOpen(open);
+        }}
+      >
+        <DialogContent aria-describedby="dialog-description">
+          <DialogHeader>
+            <DialogTitle>{replyTo ? "Reply to Comment" : "Add a Comment"}</DialogTitle>
+          </DialogHeader>
+          <div id="dialog-description" className="sr-only">
+            Fill out the form to {replyTo ? "reply to the comment" : "add your comment"}.
+          </div>
+          <Input
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="mb-2"
+          />
+          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+          <Input
+            placeholder="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mb-2"
+          />
+          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+          {replyTo && (
+            <p className="text-sm mb-2">
+              Replying to <strong>{replyTo.name}</strong>
+              <Button
+                variant="link"
+                className="text-xs ml-2"
+                onClick={() => setReplyTo(null)}
+              >
+                Cancel Reply
+              </Button>
+            </p>
+          )}
+          <Textarea
+            placeholder="Your comment..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            className="mb-2"
+          />
+          {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message}</p>}
+          <DialogFooter>
+            <Button onClick={handleSubmit} disabled={createComment.isPending}>
+              {createComment.isPending ? "Submitting..." : "Submit"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
-}
+};
+
+export default CommentsSection;
