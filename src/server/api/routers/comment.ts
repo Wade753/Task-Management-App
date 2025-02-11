@@ -14,9 +14,13 @@ export const commentRouter = createTRPCRouter({
         email: z.string().email(),
         message: z.string().min(4),
         postId: z.string().uuid(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
+      console.log(
+        input,
+        "=========================================================input comm=========================",
+      );
       const post = await ctx.db.post.findUnique({
         where: { id: input.postId },
       });

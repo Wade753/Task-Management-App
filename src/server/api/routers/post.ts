@@ -5,6 +5,7 @@ import {
   publicProcedure,
 } from "@/server/api/trpc";
 import {
+  postSchema,
   type extendedPostType,
   type postType,
 } from "@/server/schemas/post-schemas";
@@ -98,6 +99,20 @@ export const postRouter = createTRPCRouter({
       return ctx.db.post.update({
         where: { id: input.id },
         data: { approvedById: ctx.session.user.id },
+      });
+    }),
+
+  updatePost: protectedProcedure
+    .input(postSchema)
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.post.update({
+        where: { id: input.id },
+        data: {
+          title: input.title,
+          content: input.content,
+          published: input.published,
+          editedById: ctx.session.user.id,
+        },
       });
     }),
 

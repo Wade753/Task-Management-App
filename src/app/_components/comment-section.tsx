@@ -10,6 +10,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -17,7 +25,9 @@ import { Heart, MessageCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { clientApi } from "@/trpc/react";
 import { z } from "zod";
-
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/hooks/use-toast";
 const commentCreateSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   email: z.string().email("Invalid email address."),
@@ -25,32 +35,49 @@ const commentCreateSchema = z.object({
   postId: z.string().uuid(),
 });
 
-interface Comment {
+type Comment = {
   id: number | string;
   name: string;
   email: string;
   message: string;
   createdAt: Date;
-}
-
-interface CommentsSectionProps {
-  postId?: string;
-}
-
-const CommentsSection: React.FC<CommentsSectionProps> = ({
-  postId = "123e4567-e89b-12d3-a456-426614174000",
-}) => {
+  postId: string;
+};
+const commentSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  message: z
+    .string()
+    .min(5, { message: "Comment must be at least 5 characters" }),
+  postId: z.string().uuid(),
+});
+const CommentsSection = ({ postId }: { postId: string }) => {
+  const { toast } = useToast();
   const [comments, setComments] = useState<Comment[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [message, setMessage] = useState<string>("");
-  const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
+  const [errors, setErrors] = useState<{
+    name?: string;
+    email?: string;
+    message?: string;
+  }>({});
 
+  const form = useForm<z.infer<typeof commentSchema>>({
+    resolver: zodResolver(commentSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      message: "",
+      postId: postId,
+    },
+  });
   const [replyTo, setReplyTo] = useState<Comment | null>(null);
 
-  const { data: fetchedComments, refetch } = clientApi.comment.getApproved.useQuery();
+  const { data: fetchedComments, refetch } =
+    clientApi.comment.getApproved.useQuery();
 
   useEffect(() => {
     const storedName = localStorage.getItem("commentName");
@@ -65,7 +92,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
         fetchedComments.map((comment) => ({
           ...comment,
           createdAt: new Date(comment.createdAt),
-        }))
+        })),
       );
     }
   }, [fetchedComments]);
@@ -85,52 +112,58 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
       setErrors({});
       setDialogOpen(false);
       setReplyTo(null);
-      alert("Comment submitted successfully for approval!");
+      toast({
+        title: "Success",
+        description: "Comment submitted successfully for approval!",
+        variant: "default",
+      });
       void refetch(); // Marcat cu 'void' pentru a ignora promisiunea returnată
     },
     onError: (error) => {
       console.error("Error creating comment:", error);
-      alert("Failed to submit the comment. Please try again.");
+      toast({
+        title: "Error",
+        description: "An error occurred while submitting your comment.",
+        variant: "destructive",
+      });
     },
   });
 
-  const handleSubmit = () => {
-    const result = commentCreateSchema.safeParse({ name, email, message, postId });
-    if (!result.success) {
-      const fieldErrors = result.error.flatten().fieldErrors;
-      setErrors({
-        name: fieldErrors.name?.[0],
-        email: fieldErrors.email?.[0],
-        message: fieldErrors.message?.[0],
-      });
-      return;
-    }
-    setErrors({});
-    createComment.mutate({ name, email, message, postId });
+  const handleSubmit = (data: z.infer<typeof commentSchema>) => {
+    createComment.mutate(data);
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto space-y-4">
-      <Card className="p-4 h-[360px] overflow-y-auto border border-gray-200 rounded-lg">
+    <div className="mx-auto w-full max-w-xl space-y-4">
+      <Card className="h-[360px] overflow-y-auto rounded-lg border border-gray-200 p-4">
         {comments.length === 0 ? (
-          <p className="text-center text-gray-500">Be the first to leave a comment!</p>
+          <p className="text-center text-gray-500">
+            Be the first to leave a comment!
+          </p>
         ) : (
           <div className="space-y-4">
             {comments.map((comment, index) => (
-              <div key={index} className="flex items-start space-x-4 p-2 border-b text-sm">
-                <div className="flex flex-col items-center w-20">
-                  <Avatar className="w-10 h-10">
+              <div
+                key={index}
+                className="flex items-start space-x-4 border-b p-2 text-sm"
+              >
+                <div className="flex w-20 flex-col items-center">
+                  <Avatar className="h-10 w-10">
                     <AvatarFallback>{comment.name[0]}</AvatarFallback>
                   </Avatar>
-                  <p className="text-xs font-bold mt-1 text-center">{comment.name}</p>
-                  <p className="text-[10px] text-gray-500 text-center">{comment.email}</p>
+                  <p className="mt-1 text-center text-xs font-bold">
+                    {comment.name}
+                  </p>
+                  <p className="text-center text-[10px] text-gray-500">
+                    {comment.email}
+                  </p>
                 </div>
 
                 <div className="flex-1">
-                  <div className="p-2 border rounded-lg max-h-24 overflow-y-auto text-xs bg-gray-100 w-full">
+                  <div className="max-h-24 w-full overflow-y-auto rounded-lg border bg-gray-100 p-2 text-xs">
                     {comment.message}
                   </div>
-                  <div className="flex items-center justify-between mt-1 text-xs text-gray-500">
+                  <div className="mt-1 flex items-center justify-between text-xs text-gray-500">
                     <p>
                       {formatDistanceToNow(new Date(comment.createdAt), {
                         addSuffix: true,
@@ -138,7 +171,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
                     </p>
                     <div className="flex space-x-2">
                       <Button variant="ghost" size="sm">
-                        <Heart className="w-4 h-4 text-gray-500" />
+                        <Heart className="h-4 w-4 text-gray-500" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -148,7 +181,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
                           setDialogOpen(true);
                         }}
                       >
-                        <MessageCircle className="w-4 h-4 text-gray-500" />
+                        <MessageCircle className="h-4 w-4 text-gray-500" />
                       </Button>
                     </div>
                   </div>
@@ -178,50 +211,78 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
       >
         <DialogContent aria-describedby="dialog-description">
           <DialogHeader>
-            <DialogTitle>{replyTo ? "Reply to Comment" : "Add a Comment"}</DialogTitle>
+            <DialogTitle>
+              {replyTo ? "Reply to Comment" : "Add a Comment"}
+            </DialogTitle>
           </DialogHeader>
           <div id="dialog-description" className="sr-only">
-            Fill out the form to {replyTo ? "reply to the comment" : "add your comment"}.
+            Fill out the form to{" "}
+            {replyTo ? "reply to the comment" : "add your comment"}.
           </div>
-          <Input
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="mb-2"
-          />
-          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
-          <Input
-            placeholder="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mb-2"
-          />
-          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-          {replyTo && (
-            <p className="text-sm mb-2">
-              Replying to <strong>{replyTo.name}</strong>
-              <Button
-                variant="link"
-                className="text-xs ml-2"
-                onClick={() => setReplyTo(null)}
-              >
-                Cancel Reply
-              </Button>
-            </p>
-          )}
-          <Textarea
-            placeholder="Your comment..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="mb-2"
-          />
-          {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message}</p>}
-          <DialogFooter>
-            <Button onClick={handleSubmit} disabled={createComment.isPending}>
-              {createComment.isPending ? "Submitting..." : "Submit"}
-            </Button>
-          </DialogFooter>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-4"
+            >
+              <FormField
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="Email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {replyTo && (
+                <p className="mb-2 text-sm">
+                  Replying to <strong>{replyTo.name}</strong>
+                  <Button
+                    variant="link"
+                    className="ml-2 text-xs"
+                    onClick={() => setReplyTo(null)}
+                  >
+                    Cancel Reply
+                  </Button>
+                </p>
+              )}
+
+              <FormField
+                name="message"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Your comment</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Your comment..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <DialogFooter>
+                <Button type="submit" disabled={createComment.isPending}>
+                  {createComment.isPending ? "Submitting..." : "Submit"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>
