@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
 import * as React from "react";
+import { useState, useEffect } from "react"; // Adaugă useState și useEffect
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -25,10 +26,8 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { startTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation"; // Adaugă useSearchParams
 import Link from "next/link";
-
-
 
 const formSchema = z.object({
     email: z.string().email({ message: "Invalid email address." }),
@@ -37,6 +36,10 @@ const formSchema = z.object({
 
 const LoginForm = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const success = searchParams.get("success");
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -45,13 +48,24 @@ const LoginForm = () => {
         },
     });
 
+    useEffect(() => {
+        if (success) {
+            setSuccessMessage("Password successfully changed!");
+            const timer = setTimeout(() => {
+                setSuccessMessage(null);
+            }, 5000); // Ascunde mesajul după 5 secunde
+
+            return () => clearTimeout(timer); // Curăță timer-ul când componenta este demontată
+        }
+    }, [success]);
+
     function onSubmit(data: z.infer<typeof formSchema>) {
         startTransition(async () => {
             const res = await signIn("credentials", {
                 email: data.email,
                 password: data.password,
                 redirect: false,
-            })
+            });
             if (res?.error) {
                 form.setError("email", {
                     type: "manual",
@@ -66,6 +80,12 @@ const LoginForm = () => {
     return (
         <div className="flex items-center justify-center min-h-screen">
             <Card className="w-[400px]">
+                {/* Mesaj de succes */}
+                {successMessage && (
+                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-md mb-4">
+                        {successMessage}
+                    </div>
+                )}
                 <CardHeader>
                     <CardTitle>Login</CardTitle>
                     <CardDescription>Sign in to your account.</CardDescription>
@@ -107,8 +127,13 @@ const LoginForm = () => {
                     Don't have an account?
                     <Link href="/register" className="text-blue-500 ml-1">Register</Link>
                 </CardFooter>
+                <CardFooter className="text-sm text-gray-500">
+                    Forgot Password?
+                    <Link href="/forgot-password" className="text-blue-500 ml-1">Reset Password</Link>
+                </CardFooter>
             </Card>
         </div>
     );
-}
-export { LoginForm }
+};
+
+export { LoginForm };

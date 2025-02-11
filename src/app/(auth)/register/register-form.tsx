@@ -122,6 +122,10 @@ const RegisterForm = () => {
                         Login
                     </Link>
                 </CardFooter>
+                <CardFooter className="text-sm text-gray-500">
+                    Forgot Password?
+                    <Link href="/forgot-password" className="text-blue-500 ml-1">Reset Password</Link>
+                </CardFooter>
             </Card>
         </div>
     );
