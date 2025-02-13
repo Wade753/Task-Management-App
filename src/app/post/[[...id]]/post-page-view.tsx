@@ -1,11 +1,11 @@
 "use client";
+import React from "react";
 import CommentSection from "@/app/_components/comment-section";
 import { clientApi } from "@/trpc/react";
 import { type serverApi } from "@/trpc/server";
 import { useRouter, useSearchParams } from "next/navigation";
-import React from "react";
 
-const PostPageView = () => {
+const PostPageViewContent = () => {
   const router = useRouter();
   const params = useSearchParams();
   const id = params.get("id")!;
@@ -57,4 +57,11 @@ const PostPageView = () => {
   );
 };
 
+const PostPageView = () => {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <PostPageViewContent />
+    </React.Suspense>
+  );
+};
 export default PostPageView;

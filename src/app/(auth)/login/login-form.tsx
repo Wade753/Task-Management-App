@@ -36,7 +36,7 @@ const formSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters." }),
 });
 
-const LoginForm = () => {
+const LoginFormContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const success = searchParams.get("success");
@@ -149,6 +149,13 @@ const LoginForm = () => {
         </CardFooter>
       </Card>
     </div>
+  );
+};
+const LoginForm = () => {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <LoginFormContent />
+    </React.Suspense>
   );
 };
 
