@@ -18,6 +18,11 @@ declare module "next-auth" {
   }
 }
 export const useSecureCookies = !!process.env.VERCEL_URL;
+export const cookiePrefix = process.env.VERCEL_URL
+  ? "vercel."
+  : process.env.NODE_ENV === "production"
+    ? "localhost."
+    : "";
 
 export const authConfig = {
   // Definesti credentialele pentru log in, aici cu email si password, insa le poti folosi pentru orice autentificare ai nevoie
@@ -71,9 +76,53 @@ export const authConfig = {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        // domain:
-        //   hostname && !hostname.includes("localhost") ? hostname : undefined,
         secure: useSecureCookies,
+      },
+    },
+    callbackUrl: {
+      name: `__Secure-next-auth.callback-url`,
+      options: {
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },
+    },
+    csrfToken: {
+      name: `__Host-next-auth.csrf-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+      },
+    },
+    pkceCodeVerifier: {
+      name: `${cookiePrefix}next-auth.pkce.code_verifier`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+        maxAge: 900,
+      },
+    },
+    state: {
+      name: `${cookiePrefix}next-auth.state`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+        maxAge: 900,
+      },
+    },
+    nonce: {
+      name: `${cookiePrefix}next-auth.nonce`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
       },
     },
   },
