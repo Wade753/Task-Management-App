@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+// import { DeletePostModal } from "@/components/common/delete-post";
 
 interface Comment {
   id: string;
@@ -75,12 +76,11 @@ const DashboardCommentsPage: React.FC = () => {
                   >
                     Approve
                   </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={() => handleDelete(comment.id)}
-                  >
-                    <Trash2 size={16} className="mr-1" /> Delete
-                  </Button>
+                  {/* <DeletePostModal postTitle={comment.name} onDelete={() => handleDelete(comment.id)}>
+                      <Button variant="destructive">
+                        <Trash2 size={16} className="mr-1" /> Delete
+                      </Button>
+                  </DeletePostModal> */}
                 </div>
               </div>
             </Card>
