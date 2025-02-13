@@ -18,6 +18,7 @@ declare module "next-auth" {
   }
 }
 export const useSecureCookies = !!process.env.VERCEL_URL;
+
 export const cookiePrefix = process.env.VERCEL_URL
   ? "vercel."
   : process.env.NODE_ENV === "production"
@@ -63,7 +64,7 @@ export const authConfig = {
     }),
   ],
   adapter: PrismaAdapter(db),
-  session: { strategy: "jwt" }, // JWT > json web tooken > ce face? > codifica toate datele introduse in Dumnezeu stie ce..
+  session: { strategy: "database" }, // JWT > json web tooken > ce face? > codifica toate datele introduse in Dumnezeu stie ce..
   secret: process.env.AUTH_SECRET ?? randomUUID(), // AUTH_SECRET > o gasesti in env. acolo ai cheia
   pages: {
     signIn: "/login",
@@ -76,7 +77,7 @@ export const authConfig = {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: useSecureCookies,
+        secure: process.env.NODE_ENV === "production",
       },
     },
     callbackUrl: {
@@ -142,7 +143,7 @@ export const authConfig = {
       const userFromDB = await db.user.findFirst({
         // functie care cauta in baza de date userul cu emailul introdus
         where: {
-          email: token.emil!,
+          email: token.email!,
         },
       });
       if (!userFromDB) {
