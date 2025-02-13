@@ -64,7 +64,7 @@ export const authConfig = {
     }),
   ],
   adapter: PrismaAdapter(db),
-  session: { strategy: "database" }, // JWT > json web tooken > ce face? > codifica toate datele introduse in Dumnezeu stie ce..
+  session: { strategy: "jwt" }, // JWT > json web tooken > ce face? > codifica toate datele introduse in Dumnezeu stie ce..
   secret: process.env.AUTH_SECRET ?? randomUUID(), // AUTH_SECRET > o gasesti in env. acolo ai cheia
   pages: {
     signIn: "/login",
