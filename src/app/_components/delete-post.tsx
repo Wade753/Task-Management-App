@@ -12,15 +12,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const DeletePostModal = ({ postTitle, onDelete }: { postTitle: string, onDelete: () => void }) => {
+const DeletePostModal = ({
+    postTitle,
+    onDelete,
+    children, // Adăugăm children ca prop
+}: {
+    postTitle: string;
+    onDelete: () => void;
+    children: React.ReactNode; // Specificăm tipul pentru children
+}) => {
     const [inputValue, setInputValue] = useState("");
     const isMatch = inputValue.trim() === postTitle.trim();
 
     return (
         <Dialog>
-            <DialogTrigger asChild>
-                <Button variant="destructive">Delete</Button>
-            </DialogTrigger>
+            <DialogTrigger asChild>{children}</DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Are you sure you want to delete this post?</DialogTitle>
@@ -43,7 +49,9 @@ const DeletePostModal = ({ postTitle, onDelete }: { postTitle: string, onDelete:
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => setInputValue("")}>Cancel</Button>
+                    <Button variant="outline" onClick={() => setInputValue("")}>
+                        Cancel
+                    </Button>
                     <Button
                         variant="destructive"
                         onClick={() => {
@@ -57,6 +65,7 @@ const DeletePostModal = ({ postTitle, onDelete }: { postTitle: string, onDelete:
             </DialogContent>
         </Dialog>
     );
-}
+};
 
-export { DeletePostModal };
+export {DeletePostModal};
+
