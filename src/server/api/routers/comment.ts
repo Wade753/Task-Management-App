@@ -37,11 +37,16 @@ export const commentRouter = createTRPCRouter({
         },
       });
     }),
-  getApproved: publicProcedure.query(async ({ ctx }) => {
-    return ctx.db.comment.findMany({
-      where: { approved: true },
-    });
-  }),
+  // GET ALL APPROVED BY ID
+  getApproved: publicProcedure
+    .input(z.object({ postId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.comment.findMany({
+        where: { postId: input.postId, approved: true },
+        orderBy: { createdAt: "desc" },
+      });
+    }),
+  // GET ALL COMMENTS BY ROLE
   getAll: protectedProcedure.query(async ({ ctx }) => {
     if (
       ctx.session?.user?.role !== "ADMIN" &&
@@ -95,6 +100,36 @@ export const commentRouter = createTRPCRouter({
       }
       return ctx.db.comment.delete({
         where: { id: input.id },
+      });
+    }),
+  incraseLikes: publicProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const currentLikeNumber = await ctx.db.comment.findUnique({
+        where: { id: input.id },
+      });
+      if (currentLikeNumber === null) {
+        throw new Error("Comment not found.");
+      }
+      // E OK, DAR ARE EROARE---- MERGE
+      return await ctx.db.comment.update({
+        where: { id: input.id },
+        data: { likes: currentLikeNumber.likes + 1 },
+      });
+    }),
+
+  decreaseLikes: publicProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const currentLikeNumber = await ctx.db.comment.findUnique({
+        where: { id: input.id },
+      });
+      if (currentLikeNumber === null) {
+        throw new Error("Comment not found.");
+      }
+      return await ctx.db.comment.update({
+        where: { id: input.id },
+        data: { likes: currentLikeNumber.likes - 1 },
       });
     }),
 });

@@ -23,15 +23,15 @@ const DashboardCommentsPage: React.FC = () => {
   const handleApprove = (id: string) => {
     setComments((prevComments) =>
       prevComments.map((comment) =>
-        comment.id === id ? { ...comment, approved: true } : comment
-      )
+        comment.id === id ? { ...comment, approved: true } : comment,
+      ),
     );
   };
 
   const handleDelete = (id: string) => {
     if (confirm("Are you sure you want to delete this comment?")) {
       setComments((prevComments) =>
-        prevComments.filter((comment) => comment.id !== id)
+        prevComments.filter((comment) => comment.id !== id),
       );
     }
   };
@@ -40,7 +40,7 @@ const DashboardCommentsPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-4xl font-extrabold text-center mb-8">
+      <h1 className="mb-8 text-center text-4xl font-extrabold">
         Comments Management
       </h1>
       {filteredComments.length > 0 ? (
@@ -48,10 +48,10 @@ const DashboardCommentsPage: React.FC = () => {
           {filteredComments.map((comment) => (
             <Card
               key={comment.id}
-              className="p-6 bg-white border border-gray-200 shadow-lg rounded-lg transition transform hover:-translate-y-1 hover:shadow-2xl"
+              className="transform rounded-lg border border-gray-200 bg-white p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-2xl"
             >
-              <div className="flex items-center space-x-4 mb-4">
-                <Avatar className="w-14 h-14">
+              <div className="mb-4 flex items-center space-x-4">
+                <Avatar className="h-14 w-14">
                   <AvatarFallback>
                     {comment.name.charAt(0).toUpperCase()}
                   </AvatarFallback>
@@ -64,13 +64,21 @@ const DashboardCommentsPage: React.FC = () => {
               <p className="mb-4 text-gray-700">{comment.message}</p>
               <div className="flex items-center justify-between">
                 <p className="text-xs text-gray-400">
-                  {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(comment.createdAt), {
+                    addSuffix: true,
+                  })}
                 </p>
                 <div className="flex space-x-2">
-                  <Button variant="outline" onClick={() => handleApprove(comment.id)}>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleApprove(comment.id)}
+                  >
                     Approve
                   </Button>
-                  <Button variant="destructive" onClick={() => handleDelete(comment.id)}>
+                  <Button
+                    variant="destructive"
+                    onClick={() => handleDelete(comment.id)}
+                  >
                     <Trash2 size={16} className="mr-1" /> Delete
                   </Button>
                 </div>
@@ -79,7 +87,9 @@ const DashboardCommentsPage: React.FC = () => {
           ))}
         </div>
       ) : (
-        <p className="text-center text-gray-500">No unapproved comments found.</p>
+        <p className="text-center text-gray-500">
+          No unapproved comments found.
+        </p>
       )}
     </div>
   );

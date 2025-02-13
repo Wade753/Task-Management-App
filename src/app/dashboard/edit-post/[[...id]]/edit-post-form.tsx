@@ -167,6 +167,13 @@ const EditPostForm = () => {
           {canDelete(userRole) && (
             <Button onClick={handleDelete}>Delete</Button>
           )}
+
+          <Button
+            variant="destructive"
+            onClick={() => router.push("/dashboard/add-new-post")}
+          >
+            Create Post
+          </Button>
         </div>
       </div>
 

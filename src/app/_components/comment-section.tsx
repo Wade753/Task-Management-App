@@ -22,9 +22,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Heart, MessageCircle } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, set } from "date-fns";
 import { clientApi } from "@/trpc/react";
-import { z } from "zod";
+import { z, ZodNull } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
@@ -36,19 +36,20 @@ const commentCreateSchema = z.object({
 });
 
 type Comment = {
-  id: number | string;
+  id: string;
   name: string;
   email: string;
   message: string;
   createdAt: Date;
   postId: string;
+  likes: number;
 };
 const commentSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   email: z.string().email({ message: "Invalid email address" }),
   message: z
     .string()
-    .min(5, { message: "Comment must be at least 5 characters" }),
+    .min(1, { message: "Comment must be at least 1 characters" }),
   postId: z.string().uuid(),
 });
 const CommentsSection = ({ postId }: { postId: string }) => {
@@ -77,7 +78,7 @@ const CommentsSection = ({ postId }: { postId: string }) => {
   const [replyTo, setReplyTo] = useState<Comment | null>(null);
 
   const { data: fetchedComments, refetch } =
-    clientApi.comment.getApproved.useQuery();
+    clientApi.comment.getApproved.useQuery({ postId });
 
   useEffect(() => {
     const storedName = localStorage.getItem("commentName");
@@ -129,6 +130,46 @@ const CommentsSection = ({ postId }: { postId: string }) => {
     },
   });
 
+  const increaseLikes = clientApi.comment.incraseLikes.useMutation({
+    onSuccess: () => {
+      void refetch();
+    },
+    onError: (error) => {
+      console.error("Error increasing likes:", error);
+      toast({
+        title: "Error",
+        description: "An error occurred while increasing likes.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const decreaseLikes = clientApi.comment.decreaseLikes.useMutation({
+    onSuccess: () => {
+      void refetch();
+    },
+    onError: (error) => {
+      console.error("Error decreasing likes:", error);
+      toast({
+        title: "Error",
+        description: "An error occurred while decreasing likes.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const [activeCommentId, setActiveCommentId] = useState<string | null>(null);
+
+  const handleLike = (id: string) => {
+    if (activeCommentId !== id) {
+      increaseLikes.mutate({ id });
+      setActiveCommentId(id);
+    } else {
+      decreaseLikes.mutate({ id });
+      setActiveCommentId(null);
+    }
+  };
+
   const handleSubmit = (data: z.infer<typeof commentSchema>) => {
     createComment.mutate(data);
   };
@@ -170,8 +211,20 @@ const CommentsSection = ({ postId }: { postId: string }) => {
                       })}
                     </p>
                     <div className="flex space-x-2">
-                      <Button variant="ghost" size="sm">
-                        <Heart className="h-4 w-4 text-gray-500" />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleLike(comment.id)}
+                      >
+                        {/*INCREASE LIKE COUNT*/}
+                        <Heart
+                          className={`h-4 w-4 ${
+                            activeCommentId === comment.id
+                              ? "text-red-500"
+                              : "text-gray-500"
+                          }`}
+                        />
+                        <span>{comment.likes}</span>
                       </Button>
                       <Button
                         variant="ghost"
@@ -249,7 +302,7 @@ const CommentsSection = ({ postId }: { postId: string }) => {
                   </FormItem>
                 )}
               />
-
+              {/*ATTACH REPLAY TO ORIGINAL COMMENT*/}
               {replyTo && (
                 <p className="mb-2 text-sm">
                   Replying to <strong>{replyTo.name}</strong>
