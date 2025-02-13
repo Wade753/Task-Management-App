@@ -17,6 +17,7 @@ declare module "next-auth" {
     } & DefaultSession["user"];
   }
 }
+export const useSecureCookies = !!process.env.VERCEL_URL;
 
 export const authConfig = {
   // Definesti credentialele pentru log in, aici cu email si password, insa le poti folosi pentru orice autentificare ai nevoie
@@ -62,6 +63,19 @@ export const authConfig = {
   pages: {
     signIn: "/login",
     newUser: "/register",
+  },
+  cookies: {
+    sessionToken: {
+      name: `${useSecureCookies ? "__Secure-" : ""}next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        // domain:
+        //   hostname && !hostname.includes("localhost") ? hostname : undefined,
+        secure: useSecureCookies,
+      },
+    },
   },
   callbacks: {
     session: async ({ session, token }) => {
