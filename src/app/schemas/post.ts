@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "zod";
 
 export const postSchema = z.object({
   id: z.string(),
@@ -6,7 +6,6 @@ export const postSchema = z.object({
   content: z.string(),
   author: z.string(),
   createdAt: z.string(),
-})
+});
 
-export type PostType = z.infer<typeof postSchema>
-
+export type PostType = z.infer<typeof postSchema>;
