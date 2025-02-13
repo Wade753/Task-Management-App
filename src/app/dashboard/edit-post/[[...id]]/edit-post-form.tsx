@@ -176,6 +176,13 @@ const EditPostForm = () => {
               </Button>
             </DeletePostModal>
           )}
+
+          <Button
+            variant="destructive"
+            onClick={() => router.push("/dashboard/add-new-post")}
+          >
+            Create Post
+          </Button>
         </div>
       </div>
 

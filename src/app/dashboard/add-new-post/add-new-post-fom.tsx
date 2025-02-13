@@ -1,12 +1,12 @@
 "use client";
 
-//TextEditor
+// TextEditor
 import { Input } from "@/components/ui/input";
 import React from "react";
 import MDEditor from "@uiw/react-md-editor";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -16,20 +16,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-//Calendar
-import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-
-//USER TYPE
+// USER TYPE
 import { type User } from "next-auth";
 import { clientApi } from "@/trpc/react";
+import { useToast } from "@/hooks/use-toast";
 
 type FormData = {
   id: string;
@@ -41,92 +31,66 @@ type FormData = {
   createdBy: User;
 };
 
-export default function AddNewPostForm() {
+function AddNewPostForm() {
   const form = useForm<FormData>({
     defaultValues: {
       title: "",
       content: "",
-      //CHANGE IN BACKEND THE DATE INPUT
       createdAt: new Date().toISOString(),
     },
   });
 
+  const { toast } = useToast();
+
   const [editorContent, setEditorContent] = React.useState("");
-  const [date, setDate] = React.useState<Date>();
+  const router = useRouter();
+  // CREATE POST
+  const createPost = clientApi.post.create.useMutation({
+    onSuccess: async (data) => {
+      console.log(data, "DATA PRIMITA");
+      toast({
+        title: "Post Created",
+        description: "Your post has been created successfully",
+        variant: "success",
+      });
+      setTimeout(() => {
+        router.push(`/dashboard/edit-post?id=${data.id}`);
+      }, 500);
+    },
+    onError: () => console.log("Error"),
+  });
 
-  //CREATE POST
-  const createPost = clientApi.post.create.useMutation();
-
-  //SUBMIT DATA
-  const onSubmit = (data: FormData) => {
+  // SUBMIT DATA
+  const onSubmit = async (data: FormData) => {
     console.log("Form Data:", data);
 
-    createPost.mutate(
-      { content: data.content, title: data.title },
-      {
-        onSuccess: () => console.log("Success"),
-        onError: () => console.log("Error"),
-      },
-    );
+    await createPost.mutateAsync(data);
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <Card className="mx-auto mt-10 max-w-2xl">
-          <CardHeader>
-            <CardTitle className="text-center">
-              Create your post
-              <br />
-              <Input type="text" placeholder="Name" />
-              <br />
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <br />
-              <FormField
-                control={form.control}
-                name="createdAt"
-                render={({ field }) => (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-[280px] justify-start text-left font-normal",
-                          !date && "text-muted-foreground",
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? format(date, "PPP") : <span>Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={(selectedDate) => {
-                          setDate(selectedDate);
-                          field.onChange(selectedDate);
-                        }}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                )}
-              />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+    <div className="container mx-auto p-6">
+      <div className="rounded-lg bg-white p-8 shadow-md">
+        <h1 className="mb-6 text-2xl font-bold">Create Your Post</h1>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Enter the title here"
+                      {...field}
+                      className="text-xl font-semibold"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="content"
@@ -134,26 +98,33 @@ export default function AddNewPostForm() {
                 <FormItem>
                   <FormLabel>Content</FormLabel>
                   <FormControl>
-                    <MDEditor
-                      id="editor"
-                      className="rounded-md border p-2"
-                      onChange={(value) => {
-                        setEditorContent(value!);
-                        field.onChange(value);
-                      }}
-                      value={editorContent}
-                      autoCapitalize="none"
-                      // data-color-mode="light"
-                    />
+                    <div data-color-mode="light">
+                      <MDEditor
+                        id="editor"
+                        className="rounded-md border p-2"
+                        onChange={(value) => {
+                          setEditorContent(value!);
+                          field.onChange(value);
+                        }}
+                        value={editorContent}
+                        autoCapitalize="none"
+                        height={500}
+                        style={{ backgroundColor: "white" }}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
-          </CardContent>
-        </Card>
-      </form>
-    </Form>
+            <Button type="submit" className="py-3 text-lg">
+              Submit
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </div>
   );
 }
+
+export { AddNewPostForm };
