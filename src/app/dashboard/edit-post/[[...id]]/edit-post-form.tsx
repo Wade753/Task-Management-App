@@ -19,7 +19,7 @@ import { postSchema } from "@/server/schemas/post-schemas";
 import { Separator } from "@/components/ui/separator";
 import MDEditor from "@uiw/react-md-editor";
 import { useToast } from "@/hooks/use-toast";
-import { DeletePostModal } from "@/components/common/delete-post";
+import { DeletePostModal } from "@/app/_components/delete-post";
 import { Trash2 } from "lucide-react";
 
 const canApprove = (role: string) => role === "WRITER" || role === "ADMIN";
@@ -167,12 +167,15 @@ const EditPostForm = () => {
             <Button onClick={handlePublish}>Publish</Button>
           )}
           {canDelete(userRole) && (
-              <DeletePostModal postTitle={data?.title ?? ""} onDelete={handleDelete}>
-                <Button variant="destructive">
-                  <Trash2 size={16} className="mr-1" /> Delete
-                </Button>
-              </DeletePostModal>
-            )}
+            <DeletePostModal
+              postTitle={data?.title ?? ""}
+              onDelete={handleDelete}
+            >
+              <Button variant="destructive">
+                <Trash2 size={16} className="mr-1" /> Delete
+              </Button>
+            </DeletePostModal>
+          )}
         </div>
       </div>
 
