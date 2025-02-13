@@ -10,6 +10,7 @@ export function truncateText(text: string, maxLength = 150): string {
   return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 }
 function isPlainText(text: string): boolean {
+  if (!window) return false;
   const div = document.createElement("div");
   div.innerHTML = text;
   return div.innerText === text;

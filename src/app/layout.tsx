@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navigation } from "./_components/navigation";
 import { Footer } from "./_components/footer";
 import { TRPCReactProvider } from "@/trpc/react";
 import type React from "react";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { Navigation } from "./_components/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 

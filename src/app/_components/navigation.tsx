@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Code, Users, Building2, Newspaper } from "lucide-react";
 import { usePathname } from "next/navigation";
+import AdminNavBar from "./admin-navigation";
 
 export function Navigation() {
   const pathname = usePathname();
@@ -16,8 +17,12 @@ export function Navigation() {
   const isLogin = pathname.startsWith("/login");
   const isSignup = pathname.startsWith("/register");
 
-  if (isDashboard || isLogin || isSignup) {
+  if (isLogin || isSignup) {
     return null;
+  }
+
+  if (isDashboard) {
+    return <AdminNavBar />;
   }
   /*
   in if ul de mai sus
