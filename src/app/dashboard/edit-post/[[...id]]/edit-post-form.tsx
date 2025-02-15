@@ -216,16 +216,19 @@ const EditPostForm = () => {
               <FormItem>
                 <FormLabel className="text-xl font-semibold">Content</FormLabel>
                 <FormControl>
-                  <MDEditor
-                    id="editor"
-                    className="rounded-md border p-2"
-                    onChange={(value) => {
-                      setEditorContent(value);
-                      field.onChange(value);
-                    }}
-                    value={editorContent}
-                    autoCapitalize="none"
-                  />
+                  <div data-color-mode="light">
+                    <MDEditor
+                      id="editor"
+                      className="rounded-md border p-2"
+                      onChange={(value) => {
+                        setEditorContent(value);
+                        field.onChange(value);
+                      }}
+                      value={editorContent}
+                      autoCapitalize="none"
+                      style={{ backgroundColor: "white" }}
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>

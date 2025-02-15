@@ -25,7 +25,7 @@ type FormData = {
   id: string;
   title: string;
   content: string;
-  published: true;
+  published: false;
   createdAt: string;
   updatedAt: string;
   createdBy: User;
