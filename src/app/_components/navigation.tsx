@@ -21,7 +21,7 @@ export function Navigation() {
   const isCommentView = pathname.startsWith("/commetsView");
   //const { data: session } = useSession();
 
-  if (isLogin || isSignup || isCommentView) {
+  if (isLogin || isSignup) {
     return null;
   }
 
