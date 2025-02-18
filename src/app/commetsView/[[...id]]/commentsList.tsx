@@ -2,9 +2,9 @@
 import CommentView from "@/app/_components/comment-preview";
 import { clientApi } from "@/trpc/react";
 import { useSearchParams } from "next/navigation";
-import React from "react";
+import React, { Suspense } from "react";
 
-const CommentsList = () => {
+const CommentListView = () => {
   const params = useSearchParams();
   const id = params.get("id")!;
 
@@ -27,4 +27,12 @@ const CommentsList = () => {
   );
 };
 
-export default CommentsList;
+const CommentList = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CommentListView />
+    </Suspense>
+  );
+};
+
+export default CommentList;
