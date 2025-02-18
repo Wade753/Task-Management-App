@@ -26,7 +26,7 @@ const canApprove = (role: string) => role === "WRITER" || role === "ADMIN";
 const canPublish = (role: string) => role === "ADMIN";
 const canDelete = (role: string) => role === "WRITER" || role === "ADMIN";
 
-const EditPostForm = () => {
+const EditPostFormContent = () => {
   const { toast } = useToast();
   const router = useRouter();
   const params = useSearchParams();
@@ -253,6 +253,13 @@ const EditPostForm = () => {
         </form>
       </Form>
     </div>
+  );
+};
+const EditPostForm = () => {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <EditPostFormContent />
+    </React.Suspense>
   );
 };
 

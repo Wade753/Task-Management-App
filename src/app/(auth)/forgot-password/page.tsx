@@ -1,10 +1,8 @@
-import React from 'react'
-import { ResetPasswordPreview } from './forgot-password-form'
+import React from "react";
+import { ResetPasswordPreview } from "./forgot-password-form";
 
 const ForgotPassword = () => {
-    return (
-        <ResetPasswordPreview />
-    )
-}
+  return <ResetPasswordPreview />;
+};
 
-export default ForgotPassword
+export default ForgotPassword;
