@@ -7,7 +7,7 @@ export async function middleware(req: NextRequest) {
   console.log("Middleware triggered for:", req.nextUrl.pathname);
 
   const token = await getToken({ req, secret: process.env.AUTH_SECRET });
-
+  console.log("Token:=>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> midd", token);
   const allowedPaths = ["/", "/login", "/register", "/"];
   const allowedRegexPaths = [/^\/post\?id=[a-f0-9-]+$/];
 

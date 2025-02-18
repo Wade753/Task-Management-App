@@ -76,7 +76,7 @@ export const authConfig = {
       },
     },
     csrfToken: {
-      name: `${useSecureCookies}__Host-next-auth.csrf-token`,
+      name: `${useSecureCookies ? "__Host-" : ""}next-auth.csrf-token`,
       options: {
         httpOnly: true,
         sameSite: "lax",
@@ -123,12 +123,12 @@ export const authConfig = {
       if (!userFromDB) {
         throw new Error("User not found");
       }
-      if (user) {
+      if (userFromDB) {
         // daca este gasit adaugam in tooken toate infomatiile despre user cum a fost definit in schema
-        token.id = user.id;
-        token.name = user.name;
-        token.email = user.email;
-        token.image = user.image;
+        token.id = userFromDB.id;
+        token.name = userFromDB.name;
+        token.email = userFromDB.email;
+        token.image = userFromDB.image;
         token.role = userFromDB.role;
       }
 
