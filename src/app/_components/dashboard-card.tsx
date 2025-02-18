@@ -17,9 +17,15 @@ import { type serverApi } from "@/trpc/server";
 
 //GET ALL POSTS
 
-function DashboardCard() {
-  const { data, isLoading, isError, refetch } =
-    clientApi.post.getAll.useQuery();
+function DashboardCard({
+  initialData,
+}: {
+  initialData: Awaited<ReturnType<(typeof serverApi)["post"]["getAll"]>>;
+}) {
+  const { data, isLoading, isError, refetch } = clientApi.post.getAll.useQuery(
+    undefined,
+    { initialData, refetchOnMount: true, refetchOnReconnect: true },
+  );
   // delete post
   const deletePost = clientApi.post.deletePost.useMutation();
   // update status of post to published or not
