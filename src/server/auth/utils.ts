@@ -1,5 +1,3 @@
-import { bcrypt, bcryptVerify } from "hash-wasm";
-
 export const sanitizeEmail = (email: string): string => {
   // Trim white spaces and convert to lowercase
   const sanitizedEmail = email.trim().replace(/\s/g, "").toLowerCase();
@@ -13,27 +11,45 @@ export const sanitizeEmail = (email: string): string => {
   return sanitizedEmail;
 };
 
-const COST_FACTOR = 6;
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
 
 export async function hashPassword(password: string): Promise<string> {
   const salt = crypto.getRandomValues(new Uint8Array(16));
+  const passwordBuffer = encoder.encode(password);
+  const saltedPassword = new Uint8Array([...salt, ...passwordBuffer]);
 
-  const hash = await bcrypt({
-    password,
-    salt,
-    costFactor: COST_FACTOR,
-    outputType: "encoded",
-  });
+  const hashBuffer = await crypto.subtle.digest("SHA-256", saltedPassword);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 
-  return hash;
+  const saltHex = Array.from(salt)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return `${saltHex}:${hashHex}`;
 }
 
-export function verifyPassword(
+export async function verifyPassword(
   hashedPassword: string,
   password: string,
 ): Promise<boolean> {
-  return bcryptVerify({
-    password,
-    hash: hashedPassword,
-  });
+  const [saltHex, hashHex] = hashedPassword.split(":");
+  if (!saltHex) {
+    throw new Error("Invalid hashed password format");
+  }
+  const salt = new Uint8Array(
+    saltHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)),
+  );
+  const passwordBuffer = encoder.encode(password);
+  const saltedPassword = new Uint8Array([...salt, ...passwordBuffer]);
+
+  const hashBuffer = await crypto.subtle.digest("SHA-256", saltedPassword);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHexComputed = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  return hashHex === hashHexComputed;
 }
