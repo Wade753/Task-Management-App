@@ -10,6 +10,7 @@ export async function middleware(req: NextRequest) {
   console.log("Token:=>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> midd", token);
   const allowedPaths = ["/", "/login", "/register", "/"];
   const allowedRegexPaths = [/^\/post\?id=[a-f0-9-]+$/];
+  console.log("Middleware token:", req.cookies.get("next-auth.session-token"));
 
   if (allowedPaths.includes(req.nextUrl.pathname)) {
     console.log("Allowed path, proceeding...");

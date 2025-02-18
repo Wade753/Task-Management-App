@@ -17,8 +17,8 @@ declare module "next-auth" {
     } & DefaultSession["user"];
   }
 }
-export const useSecureCookies =
-  process.env.NEXTAUTH_URL?.startsWith("https://") ?? false;
+// const useSecureCookies = false;
+// // process.env.NEXTAUTH_URL?.startsWith("https://") ?? true;
 
 export const authConfig = {
   // Definesti credentialele pentru log in, aici cu email si password, insa le poti folosi pentru orice autentificare ai nevoie
@@ -65,26 +65,27 @@ export const authConfig = {
     signIn: "/login",
     newUser: "/register",
   },
-  cookies: {
-    sessionToken: {
-      name: `${useSecureCookies ? "__Secure-" : ""}next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: useSecureCookies,
-      },
-    },
-    csrfToken: {
-      name: `${useSecureCookies ? "__Host-" : ""}next-auth.csrf-token`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: useSecureCookies,
-      },
-    },
-  },
+  // cookies: {
+  //   sessionToken: {
+  //     name: `${useSecureCookies ? "__Secure-" : ""}next-auth.session-token`,
+  //     options: {
+  //       httpOnly: false,
+  //       sameSite: "lax",
+  //       path: "/",
+  //       secure: true,
+  //     },
+  //   },
+  //   csrfToken: {
+  //     name: `${useSecureCookies ? "__Host-" : ""}next-auth.csrf-token`,
+  //     options: {
+  //       httpOnly: false,
+  //       sameSite: "lax",
+  //       path: "/",
+  //       secure: true,
+  //     },
+  //   },
+  // },
+
   callbacks: {
     session: async ({ session, token }) => {
       // aici sesiunea primeste tokenul dupa ce l-ai implementat
@@ -102,7 +103,7 @@ export const authConfig = {
       const userFromDB = await db.user.findFirst({
         // functie care cauta in baza de date userul cu emailul introdus
         where: {
-          email: token.emil!,
+          email: token.email!,
         },
       });
       if (!userFromDB) {
