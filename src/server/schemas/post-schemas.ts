@@ -15,6 +15,6 @@ export const postSchema = z.object({
 export type postType = z.infer<typeof postSchema>;
 export type extendedPostType = postType & {
   createdBy: { name: string };
-  editedBy: { name: string } | null;
-  approvedBy: { name: string } | null;
+  editedBy: { name: string; email: string } | null;
+  approvedBy: { name: string; email: string } | null;
 };
