@@ -7,7 +7,6 @@ import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { clientApi } from "@/trpc/react";
 import { Ellipsis } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useRouter } from "next/navigation";
 //SELECTOR IMPORTS
 import {
   Popover,
@@ -18,14 +17,20 @@ import { type serverApi } from "@/trpc/server";
 
 //GET ALL POSTS
 
-function DashboardCard() {
-  const { data, isLoading, isError, refetch } =
-    clientApi.post.getAll.useQuery();
+function DashboardCard({
+  initialData,
+}: {
+  initialData: Awaited<ReturnType<(typeof serverApi)["post"]["getAll"]>>;
+}) {
+  const { data, isLoading, isError, refetch } = clientApi.post.getAll.useQuery(
+    undefined,
+    { initialData, refetchOnMount: true, refetchOnReconnect: true },
+  );
   // delete post
   const deletePost = clientApi.post.deletePost.useMutation();
   // update status of post to published or not
   const publishPost = clientApi.post.publishPost.useMutation();
-  const unpublishPost = clientApi.post.unpublishPost.useMutation();
+  // const unpublishPost = clientApi.post.unpublishPost.useMutation();
   //approved post BY: name
   const approvePost = clientApi.post.approvePost.useMutation();
 
@@ -51,7 +56,7 @@ function DashboardCard() {
   const handlePublishToggle = async (postId: string, published: boolean) => {
     try {
       if (published) {
-        await unpublishPost.mutateAsync({ id: postId });
+        // await unpublishPost.mutateAsync({ id: postId });
       } else {
         await publishPost.mutateAsync({ id: postId });
       }

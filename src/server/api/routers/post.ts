@@ -48,11 +48,13 @@ export const postRouter = createTRPCRouter({
           editedBy: {
             select: {
               name: true,
+              email: true,
             },
           },
           approvedBy: {
             select: {
               name: true,
+              email: true,
             },
           },
         },

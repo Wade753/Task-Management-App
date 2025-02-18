@@ -47,12 +47,12 @@ export default function HomepageCard({
         {content &&
           truncatedContent &&
           (isContentPlainText ? (
-            <div className="text-md text-center text-gray-700">
+            <div className="text-md break-words text-center text-gray-700">
               {truncatedContent}
             </div>
           ) : (
             <div
-              className="text-md text-center text-gray-700"
+              className="text-md break-words text-center text-gray-700"
               dangerouslySetInnerHTML={{ __html: truncatedContent }}
               suppressContentEditableWarning
               suppressHydrationWarning

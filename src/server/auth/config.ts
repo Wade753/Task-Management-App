@@ -76,7 +76,7 @@ export const authConfig = {
       },
     },
     csrfToken: {
-      name: `__Host-next-auth.csrf-token`,
+      name: `${useSecureCookies}__Host-next-auth.csrf-token`,
       options: {
         httpOnly: true,
         sameSite: "lax",
