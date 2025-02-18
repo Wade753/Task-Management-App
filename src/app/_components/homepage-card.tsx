@@ -5,16 +5,17 @@ import { type extendedPostType } from "@/server/schemas/post-schemas";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import React from "react";
 
 export function truncateText(text: string, maxLength = 150): string {
   return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 }
 function isPlainText(text: string): boolean {
-  if (!window) return false;
   const div = document.createElement("div");
   div.innerHTML = text;
   return div.innerText === text;
 }
+
 export default function HomepageCard({
   title,
   content,
@@ -25,7 +26,12 @@ export default function HomepageCard({
   const router = useRouter();
   const truncatedContent = truncateText(content);
   const timeAgo = formatDistanceToNow(new Date(createdAt), { addSuffix: true });
+  const [isContentPlainText, setIsContentPlainText] =
+    React.useState<boolean>(true);
 
+  React.useEffect(() => {
+    setIsContentPlainText(isPlainText(truncatedContent));
+  }, [truncatedContent]);
   return (
     <Card
       className="mx-auto w-full max-w-md cursor-pointer rounded-xl border shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl"
@@ -40,7 +46,7 @@ export default function HomepageCard({
         {/* Conținutul central */}
         {content &&
           truncatedContent &&
-          (isPlainText(truncatedContent) ? (
+          (isContentPlainText ? (
             <div className="text-md text-center text-gray-700">
               {truncatedContent}
             </div>

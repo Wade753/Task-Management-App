@@ -7,12 +7,14 @@ import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { clientApi } from "@/trpc/react";
 import { Ellipsis } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 //SELECTOR IMPORTS
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { type serverApi } from "@/trpc/server";
 
 //GET ALL POSTS
 
