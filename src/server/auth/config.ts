@@ -17,8 +17,8 @@ declare module "next-auth" {
     } & DefaultSession["user"];
   }
 }
-// const useSecureCookies = false;
-// // process.env.NEXTAUTH_URL?.startsWith("https://") ?? true;
+// const useSecureCookies =
+//   process.env.NEXTAUTH_URL?.startsWith("https://") ?? false;
 
 export const authConfig = {
   // Definesti credentialele pentru log in, aici cu email si password, insa le poti folosi pentru orice autentificare ai nevoie
