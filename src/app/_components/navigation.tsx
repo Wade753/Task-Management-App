@@ -18,13 +18,14 @@ export function Navigation() {
   const isDashboard = pathname.startsWith("/dashboard");
   const isLogin = pathname.startsWith("/login");
   const isSignup = pathname.startsWith("/register");
+  const isCommentView = pathname.startsWith("/commetsView");
   //const { data: session } = useSession();
 
-  if (isLogin || isSignup) {
+  if (isLogin || isSignup || isCommentView) {
     return null;
   }
 
-  if (isDashboard) {
+  if (isDashboard || isCommentView) {
     return <AdminNavBar />;
   }
 
