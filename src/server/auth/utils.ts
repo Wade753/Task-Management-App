@@ -1,5 +1,5 @@
-import crypto from "crypto";
 import { bcrypt, bcryptVerify } from "hash-wasm";
+
 export const sanitizeEmail = (email: string): string => {
   // Trim white spaces and convert to lowercase
   const sanitizedEmail = email.trim().replace(/\s/g, "").toLowerCase();
@@ -16,7 +16,7 @@ export const sanitizeEmail = (email: string): string => {
 const COST_FACTOR = 6;
 
 export async function hashPassword(password: string): Promise<string> {
-  const salt = crypto.randomBytes(16);
+  const salt = crypto.getRandomValues(new Uint8Array(16));
 
   const hash = await bcrypt({
     password,

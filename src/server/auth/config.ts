@@ -2,7 +2,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { db } from "@/server/db";
-import { randomUUID } from "crypto";
+import { v4 as uuidv4 } from "uuid";
 import { verifyPassword, sanitizeEmail } from "./utils";
 
 declare module "next-auth" {
@@ -60,7 +60,7 @@ export const authConfig = {
   ],
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" }, // JWT > json web tooken > ce face? > codifica toate datele introduse in Dumnezeu stie ce..
-  secret: process.env.AUTH_SECRET ?? randomUUID(), // AUTH_SECRET > o gasesti in env. acolo ai cheia
+  secret: process.env.AUTH_SECRET ?? uuidv4(), // AUTH_SECRET > o gasesti in env. acolo ai cheia
   pages: {
     signIn: "/login",
     newUser: "/register",
