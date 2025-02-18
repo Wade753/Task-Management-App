@@ -19,7 +19,7 @@ export const commentRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       console.log(
         input,
-        "=========================================================input comm=========================",
+        "=======================input comm=========================",
       );
       const post = await ctx.db.post.findUnique({
         where: { id: input.postId },
@@ -56,6 +56,16 @@ export const commentRouter = createTRPCRouter({
     }
     return ctx.db.comment.findMany();
   }),
+  // GET ALL COMMENTS BY POST ID -------------
+  getCommentsByPostId: publicProcedure
+    .input(z.object({ postId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.comment.findMany({
+        where: { postId: input.postId },
+        orderBy: { createdAt: "desc" },
+      });
+    }),
+  // GET ONE COMMENT
   getOne: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
@@ -63,6 +73,7 @@ export const commentRouter = createTRPCRouter({
         where: { id: input.id },
       });
     }),
+  // APPROVE COMMENT
   approve: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
@@ -83,7 +94,8 @@ export const commentRouter = createTRPCRouter({
         data: { approved: true },
       });
     }),
-  delete: protectedProcedure
+  // DELETE COMMENT
+  deleteComment: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const comment = await ctx.db.comment.findUnique({
@@ -102,6 +114,7 @@ export const commentRouter = createTRPCRouter({
         where: { id: input.id },
       });
     }),
+  // INCREASE LIKES
   incraseLikes: publicProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
@@ -117,7 +130,7 @@ export const commentRouter = createTRPCRouter({
         data: { likes: currentLikeNumber.likes + 1 },
       });
     }),
-
+  // DECREASE LIKES
   decreaseLikes: publicProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {

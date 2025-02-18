@@ -28,12 +28,6 @@ import { z, ZodNull } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
-const commentCreateSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters."),
-  email: z.string().email("Invalid email address."),
-  message: z.string().min(5, "Comment must be at least 5 characters."),
-  postId: z.string().uuid(),
-});
 
 type Comment = {
   id: string;
