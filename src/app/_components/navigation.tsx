@@ -8,14 +8,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Code, Users, Building2, Newspaper } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import AdminNavBar from "./admin-navigation";
+//import { useSession } from "next-auth/react";
 
 export function Navigation() {
   const pathname = usePathname();
+  const router = useRouter();
   const isDashboard = pathname.startsWith("/dashboard");
   const isLogin = pathname.startsWith("/login");
   const isSignup = pathname.startsWith("/register");
+  //const { data: session } = useSession();
 
   if (isLogin || isSignup) {
     return null;
@@ -24,16 +27,15 @@ export function Navigation() {
   if (isDashboard) {
     return <AdminNavBar />;
   }
-  /*
-  in if ul de mai sus
 
-  nav-ul de admin
-
-  stanga POST  dreapta dreapta sa ai Avatar + username + rolul
-
-  POZA + nume (rolul)
-
-  */
+  //DASHBOARD BUTTON CHECK BEFORE ACCESS
+  // const handleDashboardClick = () => {
+  //   if (session?.user?.role === "ADMIN" || session?.user?.role === "WRITER") {
+  //     router.push("/dashboard");
+  //   } else {
+  //     alert("You do not have permission to access the dashboard.");
+  //   }
+  // };
 
   return (
     <header className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -106,6 +108,10 @@ export function Navigation() {
               Pricing
             </Link>
           </div>
+        </div>
+        <div className="ml-auto flex gap-4">
+          <Button onClick={() => router.push("/login")}>Login</Button>
+          <Button onClick={() => router.push("/dashboard")}>Dashboard</Button>
         </div>
       </nav>
     </header>

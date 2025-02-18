@@ -147,13 +147,23 @@ export const postRouter = createTRPCRouter({
   deletePost: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      console.log(ctx.session.user.role, "useru meeeeeeeeeeeeeeeeeeeeeeu");
-      // if (ctx.session.user.role !== "ADMIN") {
-      //   throw new Error("Unauthorized");
-      // }
-      return ctx.db.post.delete({
-        where: { id: input.id },
-      });
+      if (
+        ctx.session.user.role !== "WRITER" &&
+        ctx.session.user.role !== "ADMIN"
+      ) {
+        throw new Error("Unauthorized");
+      }
+
+      //FIRST DELETE ALL COMMENTS RELATED TO POST
+      await ctx.db.$transaction([
+        ctx.db.comment.deleteMany({
+          where: { postId: input.id },
+        }),
+        //THEN DELETE POST
+        ctx.db.post.delete({
+          where: { id: input.id },
+        }),
+      ]);
     }),
 
   getSecretMessage: protectedProcedure.query(() => {

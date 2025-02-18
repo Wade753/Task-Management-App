@@ -35,6 +35,7 @@ function DashboardCard({
   const approvePost = clientApi.post.approvePost.useMutation();
 
   const router = useRouter();
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -124,8 +125,8 @@ function DashboardCard({
                   </Button>
                   <Button
                     variant="ghost"
-                    onClick={() =>
-                      router.push(`/dashboard/comment?id=${card.id}`)
+                    onClick={
+                      () => router.push(`/dashboard/comment?id=${card.id}`) // FIX FOR LATER THE ROUTE
                     }
                   >
                     Comment
@@ -135,12 +136,12 @@ function DashboardCard({
             </Popover>
             {card.approvedBy && (
               <div className="text-xs text-black">
-                Approved By: {card.approvedBy.name} ({card.approvedBy.email})
+                Approved By: {card.approvedBy.name}({card.approvedBy.email})
               </div>
             )}
             {card.editedBy && (
               <div className="text-xs text-black">
-                Edited By: {card.editedBy.name} ({card.editedBy.email})
+                Edited By: {card.editedBy.name}({card.editedBy.email})
               </div>
             )}
           </CardFooter>
