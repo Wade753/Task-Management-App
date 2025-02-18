@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/icons";
 import { signOut } from "next-auth/react";
 import { type Session } from "next-auth";
+import { useRouter } from "next/navigation";
 
 const Navbar = ({ session }: { session: Session }) => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -61,6 +62,7 @@ const Navbar = ({ session }: { session: Session }) => {
 
 const AdminNav = () => {
   const { data: session } = useSession();
+  const router = useRouter();
   console.log("🚀 ~ Dashboard ~ session:", session);
   if (!session) {
     return;
@@ -69,7 +71,23 @@ const AdminNav = () => {
   return (
     <div>
       <Navbar session={session} />
-      <div className="p-4">Dashboard Content</div>
+      <div className="p-4">
+        <Button variant="ghost" onClick={() => router.push(`/dashboard`)}>
+          Dashboard
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => router.push(`/dashboard/add-new-post`)}
+        >
+          Add Post
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => router.push(`/dashboard/comments`)}
+        >
+          Comment
+        </Button>
+      </div>
     </div>
   );
 };

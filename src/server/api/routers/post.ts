@@ -19,7 +19,7 @@ export const postRouter = createTRPCRouter({
         data: {
           title: input.title,
           content: input.content,
-          published: true,
+          published: false,
           createdBy: { connect: { id: ctx.session.user.id } },
         },
       });
@@ -74,11 +74,13 @@ export const postRouter = createTRPCRouter({
         editedBy: {
           select: {
             name: true,
+            email: true,
           },
         },
         approvedBy: {
           select: {
             name: true,
+            email: true,
           },
         },
       },
@@ -125,6 +127,18 @@ export const postRouter = createTRPCRouter({
       return ctx.db.post.update({
         where: { id: input.id },
         data: { published: true },
+      });
+    }),
+
+  unpublishPost: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.session.user.role !== "ADMIN") {
+        throw new Error("Unauthorized");
+      }
+      return ctx.db.post.update({
+        where: { id: input.id },
+        data: { published: false },
       });
     }),
 
