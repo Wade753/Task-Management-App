@@ -151,9 +151,17 @@ export const postRouter = createTRPCRouter({
       ) {
         throw new Error("Unauthorized");
       }
-      return ctx.db.post.delete({
-        where: { id: input.id },
-      });
+
+      //FIRST DELETE ALL COMMENTS RELATED TO POST
+      await ctx.db.$transaction([
+        ctx.db.comment.deleteMany({
+          where: { postId: input.id },
+        }),
+        //THEN DELETE POST
+        ctx.db.post.delete({
+          where: { id: input.id },
+        }),
+      ]);
     }),
 
   getSecretMessage: protectedProcedure.query(() => {

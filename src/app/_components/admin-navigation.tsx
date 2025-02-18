@@ -43,7 +43,7 @@ const Navbar = ({ session }: { session: Session }) => {
             <span className="mr-4 text-gray-700">
               {session?.user?.name} ({session?.user?.role})
             </span>
-            <Avatar>
+            <Avatar className="mr-4">
               <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
@@ -51,7 +51,7 @@ const Navbar = ({ session }: { session: Session }) => {
               {isLoading && (
                 <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
               )}
-              <span className="ml-2">Sign Out</span>
+              <span>Sign Out</span>
             </Button>
           </div>
         </div>
@@ -71,7 +71,10 @@ const AdminNav = () => {
   return (
     <div>
       <Navbar session={session} />
-      <div className="p-4">
+      <div className="flex items-center justify-center space-x-4 p-4">
+        <Button variant="ghost" onClick={() => router.push(`/`)}>
+          Home
+        </Button>
         <Button variant="ghost" onClick={() => router.push(`/dashboard`)}>
           Dashboard
         </Button>

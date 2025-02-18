@@ -31,7 +31,7 @@ const DeletePostModal = ({
         <DialogHeader>
           <DialogTitle>Are you sure you want to delete this post?</DialogTitle>
           <DialogDescription>
-            If you are sure you want to delete the post ${postTitle}, type its
+            If you are sure you want to delete the post {postTitle}, type its
             title below.
           </DialogDescription>
         </DialogHeader>
