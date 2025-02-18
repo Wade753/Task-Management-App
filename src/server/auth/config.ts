@@ -93,6 +93,12 @@ export const authConfig = {
         token.email = user.email;
         token.image = user.image;
         token.role = userFromDB.role;
+      } else {
+        token.id = userFromDB.id;
+        token.name = userFromDB.name;
+        token.email = userFromDB.email;
+        token.image = userFromDB.image;
+        token.role = userFromDB.role;
       }
 
       return token; // intotdeauna returnam tokenu
