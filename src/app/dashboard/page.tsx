@@ -1,8 +1,15 @@
 import React from "react";
 import { DashboardCard } from "@/app/_components/dashboard-card";
 import { serverApi } from "@/trpc/server";
+import { auth } from "@/server/auth/config";
 
 const Dashboard = async () => {
+  const session = await auth();
+
+  if (!session) {
+    return <div>Not authenticated</div>;
+  }
+
   const initialData = await serverApi.post.getAll();
 
   return (

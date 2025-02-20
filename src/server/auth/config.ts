@@ -20,7 +20,7 @@ declare module "next-auth" {
 const useSecureCookies =
   process.env.NEXTAUTH_URL?.startsWith("https://") ?? false;
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const authConfig: NextAuthConfig = {
   // Definesti credentialele pentru log in, aici cu email si password, insa le poti folosi pentru orice autentificare ai nevoie
   providers: [
     Credentials({
@@ -62,8 +62,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  adapter: PrismaAdapter(db),
-  session: { strategy: "jwt" }, // JWT > json web tooken > ce face? > codifica toate datele introduse in Dumnezeu stie ce..
   secret: process.env.AUTH_SECRET ?? uuidv4(), // AUTH_SECRET > o gasesti in env. acolo ai cheia
   pages: {
     signIn: "/login",
@@ -141,4 +139,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token; // intotdeauna returnam tokenu
     },
   },
+};
+
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  adapter: PrismaAdapter(db),
+  session: { strategy: "jwt" },
+  ...authConfig,
 });
