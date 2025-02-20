@@ -5,6 +5,12 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  reactStrictMode: true,
+  // swcMinify: true,
+  // experimental: {
+  //   appDir: true,
+  // },
+};
 
 export default config;
