@@ -40,6 +40,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: sanitizeEmail(email as string),
           },
         });
+        console.log("🚀 ~ authorize ~ existingUser:", existingUser);
 
         if (existingUser && password) {
           // daca emailul si parola sunt corect introduse se returneaza userul
@@ -48,6 +49,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             existingUser.password,
             password as string,
           );
+          console.log("🚀 ~ authorize ~ isAnValidPassword:", isAnValidPassword);
           if (isAnValidPassword) {
             return existingUser;
           } else {
@@ -88,6 +90,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
   callbacks: {
     session: async ({ session, token }) => {
+      console.log("🚀 ~ session: ~ token:", token);
+      console.log("🚀 ~ session: ~ session:", session);
       // aici sesiunea primeste tokenul dupa ce l-ai implementat
       if (token) {
         session.user.id = token.id as string;
@@ -96,9 +100,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.image = (token.image as string) ?? null;
         session.user.role = token.role as "WRITER" | "EDITOR" | "ADMIN";
       }
+
+      console.log(
+        "🚀 ~ session: ~ session: =>>>>>>>>>>>>>>>>>>>>>>>>>>> final",
+        session,
+      );
+
       return session;
     },
     jwt: async ({ token, user }) => {
+      console.log("🚀 ~ jwt: ~ token:", token);
       console.log("🚀 ~ jwt: ~ user:", user);
       const userFromDB = await db.user.findFirst({
         // functie care cauta in baza de date userul cu emailul introdus
@@ -106,6 +117,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           email: token.email!,
         },
       });
+      console.log("🚀 ~ jwt: ~ userFromDB:", userFromDB);
       if (!userFromDB) {
         throw new Error("User not found");
       }
@@ -123,117 +135,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.image = userFromDB.image;
         token.role = userFromDB.role;
       }
-
+      console.log("🚀 ~ jwt: ~ token: =>>>>>>>>>>>>>>> final", token);
       return token; // intotdeauna returnam tokenu
     },
   },
 });
-
-// export const authConfig = {
-//   // Definesti credentialele pentru log in, aici cu email si password, insa le poti folosi pentru orice autentificare ai nevoie
-//   providers: [
-//     Credentials({
-//       name: "Credentials",
-//       credentials: {
-//         email: { lable: "Email", type: "text" },
-//         password: { label: "Password", type: "password" },
-//       },
-//       async authorize(credentials) {
-//         if (!credentials) {
-//           throw new Error("No credentials provider");
-//         }
-//         const { email, password } = credentials;
-//         const existingUser = await db.user.findFirst({
-//           // se cauta in baza de date userul cu emailul introdus in Ui login
-//           where: {
-//             email: sanitizeEmail(email as string),
-//           },
-//         });
-
-//         if (existingUser && password) {
-//           // daca emailul si parola sunt corect introduse se returneaza userul
-//           const isAnValidPassword: boolean = await verifyPassword(
-//             // se verifica parola cu parola criptata
-//             existingUser.password,
-//             password as string,
-//           );
-//           if (isAnValidPassword) {
-//             return existingUser;
-//           } else {
-//             throw new Error("Invalid User");
-//           }
-//         }
-//         return existingUser;
-//       },
-//     }),
-//   ],
-//   adapter: PrismaAdapter(db),
-//   session: { strategy: "jwt" }, // JWT > json web tooken > ce face? > codifica toate datele introduse in Dumnezeu stie ce..
-//   secret: process.env.AUTH_SECRET ?? uuidv4(), // AUTH_SECRET > o gasesti in env. acolo ai cheia
-//   pages: {
-//     signIn: "/login",
-//     newUser: "/register",
-//   },
-//   cookies: {
-//     sessionToken: {
-//       name: `${useSecureCookies ? "__Secure-" : ""}authjs.session-token`,
-//       options: {
-//         httpOnly: false,
-//         sameSite: "lax",
-//         path: "/",
-//         secure: true,
-//       },
-//     },
-//     csrfToken: {
-//       name: `${useSecureCookies ? "__Host-" : ""}authjs.csrf-token`,
-//       options: {
-//         httpOnly: false,
-//         sameSite: "lax",
-//         path: "/",
-//         secure: true,
-//       },
-//     },
-//   },
-
-//   callbacks: {
-//     session: async ({ session, token }) => {
-//       // aici sesiunea primeste tokenul dupa ce l-ai implementat
-//       if (token) {
-//         session.user.id = token.id as string;
-//         session.user.name = token.name!;
-//         session.user.email = token.email!;
-//         session.user.image = (token.image as string) ?? null;
-//         session.user.role = token.role as "WRITER" | "EDITOR" | "ADMIN";
-//       }
-//       return session;
-//     },
-//     jwt: async ({ token, user }) => {
-//       console.log("🚀 ~ jwt: ~ user:", user);
-//       const userFromDB = await db.user.findFirst({
-//         // functie care cauta in baza de date userul cu emailul introdus
-//         where: {
-//           email: token.email!,
-//         },
-//       });
-//       if (!userFromDB) {
-//         throw new Error("User not found");
-//       }
-//       if (user) {
-//         // daca este gasit adaugam in tooken toate infomatiile despre user cum a fost definit in schema
-//         token.id = user.id;
-//         token.name = user.name;
-//         token.email = user.email;
-//         token.image = user.image;
-//         token.role = userFromDB.role;
-//       } else {
-//         token.id = userFromDB.id;
-//         token.name = userFromDB.name;
-//         token.email = userFromDB.email;
-//         token.image = userFromDB.image;
-//         token.role = userFromDB.role;
-//       }
-
-//       return token; // intotdeauna returnam tokenu
-//     },
-//   },
-// } satisfies NextAuthConfig;
