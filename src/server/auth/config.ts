@@ -30,6 +30,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        console.log("🚀 ~ authorize ~ credentials:", credentials);
+
         if (!credentials) {
           throw new Error("No credentials provider");
         }

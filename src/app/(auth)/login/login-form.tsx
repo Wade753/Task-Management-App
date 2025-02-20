@@ -63,18 +63,20 @@ const LoginFormContent = () => {
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     startTransition(async () => {
-      const res = await signIn("credentials", data);
-
-      console.log("res => ", res);
-
-      // if (res?.error) {
-      //   form.setError("email", {
-      //     type: "manual",
-      //     message: "Invalid email or password",
-      //   });
-      // } else {
-      //   router.push("/dashboard");
-      // }
+      const res = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+      console.log("🚀 ~ onSubmit ~ res =>>>>>>>>>>>>>>>>>>", res);
+      if (res?.error) {
+        form.setError("email", {
+          type: "manual",
+          message: "Invalid email or password",
+        });
+      } else {
+        router.push("/dashboard");
+      }
     });
   }
 

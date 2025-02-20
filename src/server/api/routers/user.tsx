@@ -18,11 +18,13 @@ export const userRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      console.log("🚀 ~ .mutation ~ input:", input);
       const userExistis = await ctx.db.user.findFirst({
         where: {
           email: sanitizeEmail(input.email),
         },
       });
+      console.log("🚀 ~ .mutation ~ userExistis:", userExistis);
       if (userExistis) {
         throw new Error("User already exists");
       }
