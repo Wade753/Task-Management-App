@@ -1,7 +1,7 @@
 import React from "react";
 import { DashboardCard } from "@/app/_components/dashboard-card";
 import { serverApi } from "@/trpc/server";
-import { auth } from "@/server/auth/config";
+import { auth } from "@/server/auth";
 
 const Dashboard = async () => {
   const session = await auth();
