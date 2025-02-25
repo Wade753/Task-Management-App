@@ -26,7 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { startTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation"; // Adaugă useSearchParams
+import { useSearchParams, redirect } from "next/navigation"; // Adaugă useSearchParams
 import Link from "next/link";
 
 const formSchema = z.object({
@@ -37,7 +37,6 @@ const formSchema = z.object({
 });
 
 const LoginFormContent = () => {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const success = searchParams.get("success");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -75,7 +74,7 @@ const LoginFormContent = () => {
           message: "Invalid email or password",
         });
       } else {
-        router.push("/dashboard");
+        redirect("/dashboard");
       }
     });
   }
