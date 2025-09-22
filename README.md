@@ -71,3 +71,8 @@ npx prisma migrate dev
 5.Start the development server
 npm run dev
 Visit: http://localhost:3000
+
+## 📜 License
+
+This project is for educational purposes as part of the **SkillBrain Internship Program**. 
+
